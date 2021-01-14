@@ -1,0 +1,19 @@
+{
+  "name": "patt/miniorange-saml-20-single-sign-on",
+  "description": "Miniorange SSO PATT Extension",
+  "keywords": ["wordpress", "media", "SSO", "Login", "Security"],
+  "homepage": "https://epa.gov",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Andrew Yuen",
+      "email": "yuen.andrew@epa.gov",
+      "homepage": "https://epa.gov"
+    }
+  ],
+  "type": "wordpress-plugin",
+  "require": {
+    "php": ">=5.3.2",
+    "composer/installers": "v1.9.0"
+  }
+}
