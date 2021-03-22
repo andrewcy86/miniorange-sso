@@ -1,61 +1,164 @@
 <?php
-require_once dirname( __FILE__ ) . '/includes/lib/mo-options-enum.php';
-require_once dirname( __FILE__ ) . '/Import-export.php';
 
-define( "Uninstall_Class_Names", serialize( array(
-	"SSO_Login"         => 'mo_options_enum_sso_login',
-	"Identity_Provider" => 'mo_options_enum_identity_provider',
-	"Service_Provider"  => 'mo_options_enum_service_provider',
-	"Attribute_Mapping" => 'mo_options_enum_attribute_mapping',
-	"Domain_Restriction" => 'mo_options_enum_domain_restriction',
-	"Role_Mapping"      => 'mo_options_enum_role_mapping',
-	"Test_Configuration" => 'mo_options_enum_test_configuration',
-	"Custom_Certificate" => 'mo_options_enum_custom_certificate',
-	"Custom_Message"	=> 'mo_options_enum_custom_messages',
-	"Plugin_Admin"		=> 'mo_options_plugin_admin'
-) ) );
 
-if ( !defined( 'WP_UNINSTALL_PLUGIN' ) ) 
-	exit();
-
-if(get_option('mo_saml_keep_settings_on_deletion')!=='true') {
-	if (! is_multisite ()) {
-		mo_saml_delete_plugin_configuration();
-        mo_saml_delete_user_meta();
-	} else {
-		global $wpdb;
-		$blog_ids = $wpdb->get_col ( "SELECT blog_id FROM $wpdb->blogs" );
-		$original_blog_id = get_current_blog_id ();
-		
-		foreach ( $blog_ids as $blog_id ) {
-			switch_to_blog ( $blog_id );
-			mo_saml_delete_plugin_configuration();
-            mo_saml_delete_user_meta();
-		}
-		switch_to_blog ( $original_blog_id );
-		
-	}
+if (defined("\127\120\137\x55\x4e\x49\x4e\123\124\x41\114\x4c\x5f\120\114\x55\x47\111\x4e")) {
+    goto D1;
 }
-
-function mo_saml_delete_plugin_configuration(){
-	$tab_class_name = unserialize(Uninstall_Class_Names);
-	$configuration_array = array();
-	foreach ($tab_class_name as $key => $value) {
-		$configuration_array[$key] = mo_get_configuration_array($value, true);
-	}
-	foreach($configuration_array as $config_name => $config_object){
-		foreach($config_object as $const_name => $option_name){
-			delete_option($option_name);
-		}		
-	}
-
+die;
+D1:
+if (get_option("\155\x6f\x5f\163\x61\x6d\x6c\x5f\153\145\145\x70\137\163\145\x74\x74\x69\x6e\147\x73\x5f\x6f\156\x5f\x64\145\x6c\x65\x74\151\x6f\x6e") === "\164\x72\x75\x65") {
+    goto V0;
 }
-function mo_saml_delete_user_meta(){
-    $users = get_users( array() );
-    foreach ( $users as $user ) {
-        delete_user_meta($user->ID, 'mo_saml_user_attributes');
-        delete_user_meta($user->ID, 'mo_saml_session_index');
-        delete_user_meta($user->ID, 'mo_saml_name_id');
+if (!is_multisite()) {
+    goto qI;
+}
+global $wpdb;
+$NG = $wpdb->get_col("\x53\x45\114\105\x43\x54\x20\x62\154\x6f\x67\x5f\x69\x64\x20\x46\122\x4f\x4d\x20{$wpdb->blogs}");
+$Kw = get_current_blog_id();
+foreach ($NG as $blog_id) {
+    switch_to_blog($blog_id);
+    delete_option("\155\157\x5f\x73\141\155\154\x5f\150\157\163\x74\x5f\x6e\141\155\x65");
+    delete_option("\x6d\x6f\137\163\141\x6d\x6c\137\156\x65\167\x5f\x72\145\147\151\x73\164\x72\141\164\x69\157\x6e");
+    delete_option("\x6d\157\x5f\x73\141\x6d\x6c\x5f\141\x64\x6d\151\x6e\x5f\x70\150\x6f\x6e\x65");
+    delete_option("\155\x6f\x5f\x73\x61\x6d\x6c\x5f\141\144\155\151\156\137\x65\155\x61\151\154");
+    delete_option("\x6d\x6f\x5f\163\x61\155\154\137\141\x64\x6d\x69\156\x5f\160\x61\x73\x73\x77\157\162\144");
+    delete_option("\155\157\137\163\141\x6d\154\x5f\166\x65\x72\x69\146\x79\x5f\x63\x75\163\x74\157\x6d\x65\162");
+    delete_option("\155\x6f\137\x73\141\x6d\154\x5f\141\144\155\x69\x6e\x5f\x63\x75\163\x74\157\x6d\x65\x72\x5f\x6b\145\x79");
+    delete_option("\155\157\137\163\x61\x6d\154\x5f\141\x64\x6d\x69\x6e\x5f\x61\160\x69\x5f\x6b\145\171");
+    delete_option("\155\157\137\x73\141\155\154\x5f\143\165\x73\164\x6f\x6d\x65\162\137\x74\157\x6b\145\156");
+    delete_option("\x6d\157\x5f\x73\141\x6d\x6c\x5f\155\145\x73\x73\x61\147\145");
+    delete_option("\x6d\x6f\137\163\x61\x6d\x6c\137\x72\x65\147\x69\x73\164\x72\x61\x74\151\157\156\x5f\x73\164\x61\164\x75\163");
+    delete_option("\x73\141\x6d\x6c\x5f\x69\x64\160\137\143\157\156\146\x69\x67\137\x69\x64");
+    delete_option("\x73\x61\155\154\137\x69\x64\145\x6e\164\x69\164\x79\137\156\141\155\145");
+    delete_option("\x73\141\x6d\154\137\154\x6f\x67\151\x6e\x5f\x75\162\154");
+    delete_option("\163\141\155\x6c\x5f\154\157\147\157\x75\x74\137\x75\x72\x6c");
+    delete_option("\x73\x61\x6d\154\137\151\163\163\165\x65\x72");
+    delete_option("\x73\141\155\x6c\137\170\x35\60\71\x5f\x63\x65\162\x74\151\146\151\143\141\164\145");
+    delete_option("\163\141\155\x6c\x5f\x72\145\163\x70\x6f\156\x73\145\137\x73\x69\x67\x6e\145\x64");
+    delete_option("\x73\x61\x6d\x6c\137\x61\163\x73\145\x72\x74\x69\157\156\137\x73\151\x67\x6e\x65\x64");
+    delete_option("\x73\x61\155\154\x5f\x61\x6d\137\146\x69\x72\x73\x74\x5f\x6e\x61\155\x65");
+    delete_option("\x73\x61\155\x6c\137\141\155\x5f\165\x73\x65\162\x6e\x61\x6d\x65");
+    delete_option("\x73\x61\155\154\137\x61\x6d\x5f\145\x6d\x61\151\x6c");
+    delete_option("\163\x61\x6d\x6c\137\141\x6d\x5f\154\x61\x73\x74\x5f\156\x61\x6d\x65");
+    delete_option("\163\x61\x6d\154\137\x61\x6d\x5f\x64\145\146\x61\x75\154\x74\x5f\x75\163\x65\x72\x5f\x72\x6f\154\145");
+    delete_option("\163\141\x6d\154\137\141\x6d\x5f\147\x72\157\x75\160\x5f\x6e\141\155\x65");
+    delete_option("\x6d\157\137\x73\141\x6d\154\137\151\x64\x70\x5f\x63\157\156\x66\151\147\137\x63\x6f\x6d\160\154\x65\x74\145");
+    delete_option("\155\x6f\137\163\x61\155\x6c\137\145\156\141\142\x6c\145\137\x6c\x6f\x67\151\x6e\137\x72\145\144\151\x72\145\x63\x74");
+    delete_option("\155\157\137\163\x61\x6d\x6c\137\141\154\x6c\x6f\167\137\x77\160\x5f\x73\x69\x67\x6e\151\x6e");
+    delete_option("\x73\x61\155\154\x5f\x61\x6d\x5f\x61\143\x63\x6f\x75\156\164\x5f\155\x61\164\x63\x68\x65\x72");
+    delete_option("\155\157\137\x73\x61\155\x6c\137\164\x72\x61\x6e\163\141\x63\164\x69\157\156\x49\x64");
+    delete_option("\155\x6f\137\163\x61\155\x6c\x5f\x66\x6f\x72\143\x65\x5f\141\x75\x74\150\145\156\164\151\143\141\164\151\157\156");
+    delete_option("\155\x6f\x5f\163\141\155\x6c\137\x72\145\x67\x69\x73\x74\145\162\145\x64\x5f\157\156\154\171\137\x61\143\x63\x65\x73\x73");
+    delete_option("\x73\x61\155\154\x5f\x61\155\x5f\144\157\156\x74\x5f\x61\x6c\x6c\157\x77\x5f\x75\x6e\x6c\x69\x73\x74\145\x64\137\165\x73\145\x72\x5f\x72\157\154\x65");
+    delete_option("\x6d\x6f\137\x73\141\x6d\154\137\144\157\156\164\137\x63\x72\x65\141\x74\x65\137\165\x73\x65\162\x5f\151\x66\x5f\x72\x6f\x6c\145\x5f\x6e\x6f\164\x5f\x6d\141\x70\160\145\144");
+    delete_option("\155\157\137\x73\141\x6d\x6c\137\163\160\137\x65\156\x74\x69\x74\x79\137\x69\144");
+    delete_option("\163\141\155\154\x5f\141\x6d\137\x64\x6f\x6e\164\137\x75\160\x64\x61\x74\x65\137\145\170\151\163\x74\151\156\x67\137\165\x73\145\x72\x5f\x72\x6f\x6c\145");
+    delete_option("\x73\141\155\x6c\x5f\141\x6d\x5f\x64\151\163\x70\154\141\x79\137\x6e\x61\155\145");
+    delete_option("\x73\x6d\x6c\x5f\154\x6b");
+    delete_option("\164\x5f\x73\x69\164\x65\x5f\163\164\x61\x74\165\163");
+    delete_option("\163\151\164\145\x5f\x63\x6b\x5f\154");
+    delete_option("\155\157\x5f\x73\141\155\154\x5f\146\162\145\145\x5f\x76\145\x72\163\151\x6f\x6e");
+    delete_option("\155\x6f\137\x73\x61\155\154\137\x73\x70\137\142\141\x73\x65\x5f\x75\162\x6c");
+    delete_option("\x6d\157\x5f\x73\141\x6d\x6c\x5f\x73\160\137\145\x6e\x74\151\x74\171\x5f\151\144");
+    delete_option("\155\x6f\x5f\x73\x61\155\154\x5f\x72\145\154\x61\171\137\x73\x74\x61\164\145");
+    delete_option("\x6d\157\137\163\x61\x6d\154\x5f\141\144\x6d\151\x6e\x5f\x63\157\x6d\160\141\x6e\171");
+    delete_option("\x6d\157\x5f\x73\141\x6d\154\137\x61\x64\x6d\151\156\137\146\x69\162\163\x74\137\156\x61\x6d\x65");
+    delete_option("\x6d\x6f\x5f\163\x61\155\x6c\137\141\144\x6d\151\x6e\137\x6c\141\163\164\137\156\141\x6d\145");
+    delete_option("\x6d\x6f\137\x73\141\x6d\x6c\137\154\151\143\145\156\x73\x65\x5f\x6e\141\155\145");
+    delete_option("\155\157\137\x73\x61\x6d\x6c\x5f\165\x73\162\137\154\155\164");
+    delete_option("\x6d\x6f\137\x73\x61\x6d\x6c\137\143\x75\x73\164\157\x6d\x5f\141\164\164\x72\x73\x5f\155\x61\x70\160\x69\x6e\x67");
+    delete_option("\163\141\x6d\154\x5f\x6e\x61\x6d\x65\151\144\x5f\146\x6f\x72\155\x61\164");
+    delete_option("\x6d\157\x5f\x73\141\155\154\x5f\x63\x75\x73\x74\157\155\137\154\157\147\x69\156\137\164\145\170\164");
+    delete_option("\155\157\x5f\x73\x61\x6d\154\137\143\x75\163\164\157\155\x5f\154\157\147\x6f\x75\x74\x5f\164\x65\x78\164");
+    delete_option("\x4d\117\137\x53\101\115\x4c\137\x52\105\x51\x55\x45\x53\124");
+    delete_option("\115\117\137\123\x41\x4d\114\137\x52\x45\123\x50\117\116\123\105");
+    delete_option("\115\x4f\x5f\x53\101\x4d\114\137\x54\x45\x53\x54");
+    delete_option("\155\157\x5f\163\141\x6d\154\x5f\x65\x6e\x63\x6f\x64\x69\156\x67\137\x65\156\x61\142\x6c\x65\144");
+    delete_option("\x6d\x6f\x5f\163\141\155\154\x5f\x6b\145\x65\x70\137\163\x65\x74\x74\151\156\x67\x73\137\x6f\156\x5f\x64\x65\x6c\x65\x74\151\x6f\x6e");
+    delete_option("\155\x6f\x5f\163\141\x6d\x6c\x5f\x74\x65\163\164\137\x63\157\x6e\146\x69\x67\x5f\x61\x74\164\162\163");
+    delete_option("\x6d\x6f\x5f\157\x70\x74\x69\x6f\156\x5f\x6d\151\147\162\141\x74\151\157\156");
+    delete_option("\163\x61\155\154\137\x73\x61\x76\145\137\x63\x6f\x6e\x66\151\x67\x5f\164\x6f\137\x66\151\154\x65");
+    $c9 = get_users(array());
+    foreach ($c9 as $user) {
+        delete_user_meta($user->ID, "\x6d\157\x5f\163\x61\155\154\137\x75\x73\145\x72\x5f\x61\164\x74\x72\x69\142\165\x74\x65\163");
+        delete_user_meta($user->ID, "\155\x6f\137\163\141\x6d\154\137\163\x65\163\x73\x69\x6f\156\x5f\151\x6e\x64\145\170");
+        delete_user_meta($user->ID, "\x6d\x6f\x5f\163\x61\x6d\154\x5f\x6e\x61\x6d\x65\x5f\151\144");
+        ul:
     }
+    gK:
+    Xq:
 }
+GY:
+switch_to_blog($Kw);
+goto pM;
+qI:
+delete_option("\x6d\157\137\x73\x61\155\x6c\137\x68\x6f\163\164\137\x6e\141\155\145");
+delete_option("\x6d\157\x5f\163\141\155\154\137\x6e\145\x77\x5f\162\145\147\151\163\x74\x72\x61\x74\151\157\x6e");
+delete_option("\x6d\157\137\x73\141\155\154\137\141\144\155\x69\x6e\137\160\150\x6f\x6e\145");
+delete_option("\155\x6f\x5f\163\141\x6d\x6c\137\141\x64\155\x69\156\137\145\155\141\151\x6c");
+delete_option("\x6d\x6f\x5f\163\141\x6d\154\137\141\144\x6d\x69\156\137\x70\141\x73\x73\x77\157\162\144");
+delete_option("\155\x6f\x5f\163\141\x6d\x6c\x5f\x76\145\x72\151\146\171\x5f\x63\165\163\x74\157\155\145\x72");
+delete_option("\x6d\x6f\137\163\x61\155\x6c\x5f\141\x64\155\x69\x6e\x5f\x63\x75\x73\x74\x6f\x6d\145\162\x5f\153\x65\x79");
+delete_option("\155\x6f\137\163\x61\x6d\x6c\137\141\144\x6d\x69\156\137\141\x70\x69\137\153\145\x79");
+delete_option("\x6d\x6f\x5f\163\x61\x6d\154\137\143\x75\163\x74\x6f\x6d\x65\162\137\164\x6f\x6b\x65\x6e");
+delete_option("\x6d\x6f\137\x73\141\155\x6c\137\155\145\163\x73\141\147\x65");
+delete_option("\155\157\137\x73\141\155\x6c\137\x72\145\x67\151\163\x74\x72\x61\x74\151\157\156\x5f\x73\164\141\164\x75\163");
+delete_option("\x73\x61\155\x6c\137\151\144\160\x5f\143\x6f\156\146\151\147\x5f\x69\x64");
+delete_option("\163\x61\155\154\137\x69\144\145\x6e\x74\x69\164\171\x5f\156\x61\x6d\x65");
+delete_option("\163\141\x6d\154\137\154\157\147\x69\x6e\137\165\x72\154");
+delete_option("\x73\141\x6d\154\137\154\157\x67\151\x6e\x5f\x62\151\156\144\151\x6e\x67\137\x74\171\160\145");
+delete_option("\x73\x61\155\154\137\x6c\x6f\x67\x6f\165\164\137\x75\x72\154");
+delete_option("\x73\141\x6d\x6c\x5f\x6c\x6f\147\x6f\x75\164\137\142\151\x6e\x64\151\156\147\x5f\x74\x79\x70\145");
+delete_option("\163\141\x6d\x6c\137\151\163\x73\165\145\x72");
+delete_option("\163\x61\x6d\154\x5f\x78\x35\60\71\x5f\143\145\162\x74\x69\146\x69\x63\x61\x74\145");
+delete_option("\x73\x61\155\154\137\162\x65\x73\160\157\x6e\163\145\137\x73\x69\147\156\x65\x64");
+delete_option("\x73\x61\x6d\x6c\137\x61\163\163\x65\162\164\151\x6f\x6e\x5f\163\x69\147\156\145\x64");
+delete_option("\x73\141\155\x6c\x5f\141\155\137\x66\x69\162\x73\164\x5f\x6e\141\x6d\x65");
+delete_option("\x73\x61\x6d\154\x5f\x61\155\137\165\163\145\162\x6e\x61\155\x65");
+delete_option("\163\x61\x6d\x6c\x5f\x61\x6d\137\145\155\x61\151\x6c");
+delete_option("\x73\141\155\154\x5f\141\155\137\154\141\163\164\137\156\141\x6d\x65");
+delete_option("\163\x61\155\154\137\x61\x6d\137\x64\145\146\141\x75\154\164\x5f\x75\163\145\x72\137\x72\x6f\154\145");
+delete_option("\163\141\x6d\154\x5f\141\x6d\x5f\x67\x72\157\165\160\137\x6e\141\155\x65");
+delete_option("\x6d\x6f\137\x73\x61\155\x6c\x5f\x69\x64\160\137\143\157\x6e\146\x69\x67\x5f\143\x6f\x6d\160\x6c\145\164\x65");
+delete_option("\155\x6f\x5f\163\141\x6d\154\x5f\145\156\x61\x62\154\145\x5f\x6c\157\x67\x69\156\x5f\x72\145\144\151\162\145\143\x74");
+delete_option("\155\x6f\x5f\x73\x61\x6d\154\x5f\x61\154\x6c\x6f\167\x5f\x77\160\x5f\163\151\x67\x6e\151\x6e");
+delete_option("\163\141\x6d\154\137\x61\x6d\137\141\x63\143\x6f\x75\x6e\x74\x5f\x6d\x61\164\143\x68\145\162");
+delete_option("\x6d\x6f\x5f\x73\x61\x6d\x6c\x5f\x74\x72\141\x6e\163\141\143\x74\x69\157\x6e\x49\144");
+delete_option("\155\157\137\163\141\x6d\x6c\x5f\146\x6f\x72\143\x65\x5f\x61\x75\x74\x68\145\156\164\151\x63\141\x74\151\x6f\x6e");
+delete_option("\x6d\157\137\163\x61\x6d\154\x5f\162\145\147\x69\163\x74\x65\162\x65\144\137\x6f\156\154\171\137\141\x63\143\x65\x73\x73");
+delete_option("\163\x61\155\x6c\x5f\x61\155\x5f\x64\157\156\164\137\141\x6c\154\x6f\167\137\165\x6e\x6c\151\x73\x74\x65\x64\137\165\x73\x65\162\137\162\157\154\x65");
+delete_option("\x6d\157\137\x73\141\155\x6c\x5f\x64\x6f\x6e\x74\x5f\143\162\145\x61\164\145\137\x75\163\x65\162\137\151\146\137\x72\x6f\154\x65\x5f\x6e\x6f\x74\137\155\x61\160\x70\x65\144");
+delete_option("\163\x61\x6d\154\x5f\x61\155\137\x64\x69\x73\x70\154\x61\x79\137\x6e\141\x6d\145");
+delete_option("\163\155\x6c\137\x6c\153");
+delete_option("\164\137\163\151\x74\x65\137\x73\x74\x61\x74\x75\x73");
+delete_option("\x73\x69\164\145\137\143\153\137\154");
+delete_option("\x6d\157\137\x73\x61\x6d\154\137\x66\x72\145\x65\137\x76\145\162\163\x69\x6f\156");
+delete_option("\155\157\x5f\163\x61\155\x6c\x5f\x73\x70\137\x62\x61\163\x65\x5f\x75\162\x6c");
+delete_option("\x6d\157\137\x73\x61\x6d\154\137\x73\160\137\145\156\164\x69\x74\171\x5f\x69\x64");
+delete_option("\x6d\x6f\137\x73\x61\x6d\x6c\137\x72\145\x6c\141\171\137\163\x74\x61\164\145");
+delete_option("\155\157\137\x73\x61\155\154\x5f\141\x64\x6d\151\156\137\x63\x6f\155\x70\x61\156\x79");
+delete_option("\155\x6f\137\163\x61\x6d\154\137\141\144\x6d\x69\x6e\x5f\x66\x69\162\163\164\137\x6e\x61\155\145");
+delete_option("\155\157\137\x73\141\155\154\x5f\x61\144\155\151\156\137\154\x61\163\x74\137\x6e\141\x6d\145");
+delete_option("\155\x6f\x5f\x73\141\155\154\137\154\x69\x63\145\156\x73\145\137\x6e\141\155\x65");
+delete_option("\x6d\157\x5f\x73\x61\x6d\x6c\137\165\163\162\137\154\155\x74");
+delete_option("\155\157\x5f\x73\x61\155\154\x5f\x63\165\x73\x74\157\x6d\x5f\x61\x74\x74\x72\163\x5f\155\141\x70\x70\x69\156\x67");
+delete_option("\163\x61\155\154\x5f\x6e\141\x6d\145\151\144\x5f\146\x6f\x72\x6d\141\164");
+delete_option("\115\117\x5f\123\x41\115\x4c\137\x52\x45\121\125\x45\123\124");
+delete_option("\115\117\137\x53\x41\115\x4c\137\122\105\x53\120\117\116\x53\x45");
+delete_option("\115\117\137\x53\x41\x4d\114\x5f\x54\105\123\x54");
+delete_option("\155\157\x5f\163\x61\x6d\154\x5f\145\156\143\x6f\144\151\156\x67\137\x65\x6e\x61\x62\x6c\145\144");
+delete_option("\x6d\x6f\137\x73\141\x6d\154\x5f\153\145\x65\x70\137\163\145\x74\x74\x69\156\x67\163\x5f\157\x6e\137\144\x65\x6c\145\164\151\x6f\156");
+delete_option("\155\157\137\x73\141\155\154\x5f\164\x65\163\164\x5f\x63\x6f\156\x66\x69\x67\137\x61\x74\164\162\x73");
+delete_option("\155\157\x5f\157\x70\164\151\x6f\156\137\x6d\x69\147\x72\141\164\151\x6f\x6e");
+delete_option("\x73\141\155\154\137\163\x61\x76\145\137\x63\x6f\156\146\x69\147\x5f\x74\x6f\x5f\146\x69\x6c\145");
+$c9 = get_users(array());
+foreach ($c9 as $user) {
+    delete_user_meta($user->ID, "\155\157\137\x73\141\155\154\137\165\163\x65\x72\137\x61\164\164\162\x69\142\165\x74\x65\x73");
+    delete_user_meta($user->ID, "\x6d\157\x5f\163\141\155\x6c\137\x73\x65\163\163\x69\x6f\x6e\x5f\151\156\x64\145\x78");
+    delete_user_meta($user->ID, "\x6d\x6f\137\x73\x61\155\x6c\137\x6e\x61\155\x65\137\151\144");
+    Bc:
+}
+uP:
+pM:
+V0:
 ?>

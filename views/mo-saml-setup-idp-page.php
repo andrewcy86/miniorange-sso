@@ -1,346 +1,64 @@
 <?php
 
-  function mo_saml_configuration_steps() {
 
-	$sp_base_url = get_option('mo_saml_sp_base_url')?:home_url();
-
-	$sp_entity_id = get_option('mo_saml_sp_entity_id')?:$sp_base_url.'/wp-content/plugins/miniorange-saml-20-single-sign-on/';
-
-	$saml_nameid_format = get_option('saml_nameid_format');
-	if(empty($saml_nameid_format)){
-		$saml_nameid_format = '1.1:nameid-format:emailAddress';
-	}
-	$upload_metadata_query = mo_saml_is_customer_license_key_verified()?add_query_arg( array( 'tab'    => 'save',
-        'action' => 'upload_metadata'
-    ), $_SERVER['REQUEST_URI'] ):"javascript: void(0)";
-
-	$service_provider_query = mo_saml_is_customer_license_key_verified()?add_query_arg( array( 'tab' => 'save' ), $_SERVER['REQUEST_URI'] ):"javascript:void(0)";
-
-	$cert_download_query = mo_saml_is_customer_license_key_verified()?'onclick="document.forms[\'mo_saml_download\'].submit();"':'javascript: void(0)';
-
-	$metadata_url = mo_saml_is_customer_license_key_verified()?$sp_base_url . "/?option=mosaml_metadata":"javascript:void(0)";
-
-
-		echo '<input type="hidden" name="option" value="mo_saml_idp_config" />';
-		
-		echo '<div class="slideshow-container ">
-	<div id="parent">
-	<div class="mo_prev"  onclick="plusSlides(-1);changeTrackerforStep1(1);" style="z-index: 2" id="mo_prev"><span id="mo_prev_pointer">&#10094;</span></div>
-	<div class="mo_next"  style="z-index: 2" onclick="plusSlides(1);changeTrackerforStep2(2)" id="mo_next"><span id="mo_next_pointer">&#10095;</span></div>
-	</div>
-	    
-	<table width="98%" border="0" class="progress-tracker-table">
-	    <tr><td>';
-	    	check_plugin_state();echo '
-
-</td></tr>
-
-		
-<tr><td>
-
-<ul class="progress-tracker progress-tracker--text progress-tracker--center anim-path anim-ripple" >
-  <li class="progress-step is-active" id="progress_step1">
-    <span class="progress-marker" id="tracker_step1" onclick="changeTrackerforStep1(1)">1</span>
-    <span class="progress-text">
-     Configure your Identity Provider 
-    </span>
-  </li>
-
-  <li class="progress-step"  id="progress_step2">
-    <span class="progress-marker" onclick="changeTrackerforStep2(2)" id="tracker_step2">2</span>
-    <span class="progress-text">
-      Configure Service Provider
-    </span>
-  </li>
-
-</ul>
-
-		<div class="mySlides fade">
-		
-		<h3 style="text-align: center">Configure your Identity Provider </h3>
-		<h4>Provide this plugin information to your Identity Provider team. You can choose any one of the below options:</h4>
-		<p><b>a) Provide this metadata URL to your Identity Provider </b></p>
-		<p style="margin-left: 2%"><code><b><a id="metadata_url" target="_blank" href="' . $metadata_url . '" '.mo_saml_is_customer_license_key_verified( true ).' >' . $sp_base_url . '/?option=mosaml_metadata</a></b></code>
-		<i class="fa fa-fw fa-lg fa-copy mo_copy copytooltip" onclick="copyToClipboard(this, \'#metadata_url\', \'#metadata_url_copy\');"><span id="metadata_url_copy" class="copytooltiptext">Copy to Clipboard</span></i>
-		</p>    
-        <p><b>b) Download the Plugin XML metadata and upload it on your Identity Provider </b></p>				
-		<p ><form method="post" action="">';
-		wp_nonce_field('mo_saml_download_metadata');
-		echo '<input type="hidden" name="option" value="mo_saml_download_metadata"/> 
-        <input type="submit" class="button button-primary button-large"  value="Download XML Metadata" style="margin-left: 2%" ' . mo_saml_is_customer_license_key_verified( true ) . ' /></form></p>
-		<p><b>c) Provide the following information to your Identity Provider.</b></p>
-		
-		<table border="1" style="background-color:#FFFFFF; border:1px solid #CCCCCC; padding:0px 0px 0px 10px; margin:2px; border-collapse: collapse; width:98%">
-			
-				<form method="post" action="" name="mo_saml_download">';
-				wp_nonce_field('mo_saml_download_cert');
-				echo '<input type="hidden" name="option" value="mo_saml_download_cert" /></form>
-					<tr>
-						<td style="width:40%; padding: 15px;"><b>SP-EntityID / Issuer</b></td>
-						<td style="width:60%; padding: 15px;"><table width="100%"><tr><td><span id="entity_id">' . $sp_entity_id . '</span></td>
-						<td><i class="fa fa-fw fa-lg fa-pull-right fa-copy mo_copy copytooltip" onclick="copyToClipboard(this, \'#entity_id\', \'#entity_id_copy\');"><span id="entity_id_copy" class="copytooltiptext">Copy to Clipboard</span></i></td></tr></table>
-						</td>
-
-					</tr>
-					<tr>
-						<td style="width:40%; padding: 15px;"><b>ACS (AssertionConsumerService) URL</b></td>
-						<td style="width:60%;  padding: 15px;"><table width="100%"><tr><td><span id="base_url">' . $sp_base_url . '/</span></td>
-						<td><i class="fa fa-fw fa-pull-right fa-lg fa-copy mo_copy copytooltip" onclick="copyToClipboard(this, \'#base_url\', \'#base_url_copy\');"><span id="base_url_copy" class="copytooltiptext">Copy to Clipboard</span></i></td></tr></table>
-						</td>
-
-					</tr>
-
-					<tr>
-						<td style="width:40%; padding: 15px;"><b>Single Logout URL</b></td>
-						<td style="width:60%;  padding: 15px;"><table width="100%"><tr><td><span id="slo_url">' . $sp_base_url . '/</span></td>
-						<td><i class="fa fa-fw fa-pull-right fa-lg fa-copy mo_copy copytooltip" onclick="copyToClipboard(this, \'#slo_url\', \'#slo_url_copy\');"><span id="slo_url_copy" class="copytooltiptext">Copy to Clipboard</span></i></td></tr></table>
-						</td>
-
-					</tr>
-
-
-					<tr>
-						<td style="width:40%; padding: 15px;"><b>Audience URI</b></td>
-						<td style="width:60%; padding: 15px;"><table width="100%"><tr><td><span id="audience">' . $sp_entity_id . '</span></td>
-						<td><i class="fa fa-fw fa-pull-right fa-lg fa-copy mo_copy copytooltip" onclick="copyToClipboard(this, \'#audience\',\'#audience_copy\');"><span id="audience_copy" class="copytooltiptext">Copy to Clipboard</span></i></td></tr></table>
-						</td>
-
-					</tr>
-					<tr>
-						<td style="width:40%; padding: 15px;"><b>NameID format</b></td>
-						<td style="width:60%; padding: 15px;"><table width="100%"><tr><td><span id="nameid">urn:oasis:names:tc:SAML:' . $saml_nameid_format . '</span></td>
-						<td><i class="fa fa-fw fa-pull-right fa-lg fa-copy mo_copy copytooltip" onclick="copyToClipboard(this, \'#nameid\', \'#nameid_copy\');"><span id="nameid_copy" class="copytooltiptext">Copy to Clipboard</span></i></td></tr></table>
-						</td>
-
-					</tr>
-					<tr>
-						<td style="width:40%; padding: 15px;"><b>Recipient URL</b></td>
-						<td style="width:60%;  padding: 15px;"><table width="100%"><tr><td><span id="recipient">' . $sp_base_url . '/</span></td>
-						<td><i class="fa fa-fw fa-pull-right fa-lg fa-copy mo_copy copytooltip" onclick="copyToClipboard(this, \'#recipient\',\'#recipient_copy\');"><span id="recipient_copy" class="copytooltiptext">Copy to Clipboard</span></i></td></tr></table>
-						</td>
-
-					</tr>
-					<tr>
-						<td style="width:40%; padding: 15px;"><b>Destination URL</b></td>
-						<td style="width:60%;  padding: 15px;"><table width="100%"><tr><td><span id="destination">' . $sp_base_url . '/</span></td>
-						<td><i class="fa fa-fw fa-pull-right fa-lg fa-copy mo_copy copytooltip" onclick="copyToClipboard(this, \'#destination\',\'#destination_copy\');"><span id="destination_copy" class="copytooltiptext">Copy to Clipboard</span></i></td></tr></table>
-						</td>
-
-					</tr>
-					<tr>
-						<td style="width:40%; padding: 15px;"><b>Default Relay State (Optional)</b></td>
-						<td style="width:60%;  padding: 15px;"><table width="100%"><tr><td><span id="relaystate">' . $sp_base_url . '/</span></td>
-						<td><i class="fa fa-fw fa-pull-right fa-lg fa-copy mo_copy copytooltip" onclick="copyToClipboard(this, \'#relaystate\', \'#relaystate_copy\');"><span id="relaystate_copy" class="copytooltiptext">Copy to Clipboard</span></i></td></tr></table>
-						</td>
-
-					</tr>
-					<tr>
-						<td style="width:40%; padding: 15px;"><b>Certificate (Optional)</b></td>
-						<td style="width:60%;  padding: 15px;">
-							<input type="button" class="button button-primary"';
-							if(!mo_saml_is_customer_license_key_verified()) { echo ' disabled '; }
-							echo $cert_download_query . ' value="Download"/>
-						</td>
-
-					</tr>
-					</table>
-					
-	
-	<tr>
-		
-		<td colspan="2">
-		<div class="mySlides fade">
-		
-		<h3 style="text-align: center;">Configure Service Provider</h3>
-		<h4>Assuming you are done with step 1 and you already have your Identity Provider\'s metadata, you can now proceed with configuring the Service Provider in either of the following two ways.</h4>
-		<p style="text-align: center"><b>
-		<a class="button button-primary button-large" href="' . $upload_metadata_query . '"  ' . mo_saml_is_customer_license_key_verified( true ) . '>
-		Upload IDP Metadata</a></b></p>
-		<p style="text-align: center;font-size: 13pt;font-weight: bold;">OR</p>
-		<p style="text-align: center;"><b>
-		<a href="' . $service_provider_query . '" class="button button-primary button-large"  ' . mo_saml_is_customer_license_key_verified( true ) . '>Manually configure SP</a> </b></p>
-		</div>
-		
-		</td>
-		
-	</tr>
-	
-	<tr>
-		<td>
-			</br><br>
-		</td>
-	</tr>
-	
-		
-	</table>
-	</div>
-	
-	<br>
-
-	<div style="position:relative;">
-	<table width="98%" border="0" style="background-color:#FFFFFF; border:1px solid #CCCCCC; padding:2%;">
-		<tr>
-	<td colspan="2">			
-		<h3><b>Service Provider Endpoints:</b></h3>		
-		<form width="98%" border="0" method="post" id="mo_saml_update_idp_settings_form" action="">';
-		wp_nonce_field('mo_saml_update_idp_settings_option');
-			echo '<input type="hidden" name="option" value="mo_saml_update_idp_settings_option" />
-				<table width="98%">
-					<tr>
-						<td width="20%">SP Base URL:</td>
-						<td width="70%"><input type="text" name="mo_saml_sp_base_url" placeholder="You site base URL" style="width: 95%;" value="' . $sp_base_url . '" required ' . mo_saml_is_customer_license_key_verified( true ) . '/></td>
-					</tr>
-					<tr>
-						<td>SP EntityID / Issuer:</td>
-						<td><input type="text" name="mo_saml_sp_entity_id" placeholder="You site base URL" style="width: 95%;" value="' . $sp_entity_id . '" required ' . mo_saml_is_customer_license_key_verified( true ) . '/></td>
-					</tr>
-						<tr>
-							<td>
-							</td>
-							<td>
-							<i><b>Note:</b> If you have already shared the above URLs or Metadata with your IdP, do <b>NOT</b> change SP EntityID. It might break your existing login flow.</i>
-							</td>
-						</tr>
-					<tr>		
-						<td colspan="2" style="text-align: center"><br><input type="submit" name="submit" style="width:100px;" value="Update" class="button button-primary button-large" ' . mo_saml_is_customer_license_key_verified( true ) . '/></td>
-					</tr>
-				</table>
-		</form>
-		</div>
-		</td>
-</tr>
-
-	
-</table>
-		
-
-<br>
-
-
-
-
-<script>
-
-
- var progress_step1 = document.getElementById("progress_step1");
-  var progress_step2 = document.getElementById("progress_step2");
-
-var slideIndex = 1;
-showSlides(slideIndex);
-
-function plusSlides(n) {
-  showSlides(slideIndex += n);
-}
-
-function currentSlide(n) {
-  
-  showSlides(slideIndex = n);
-  
-}
-
-function changeTrackerforStep2(n) {
-     progress_step1.classList.remove("is-active");
-     progress_step1.classList.add("is-complete");
-     progress_step2.classList.add("is-active");
-
-     currentSlide(n);
-}
-
-function changeTrackerforStep1(n) {
-  progress_step2.classList.remove("is-active");
-  progress_step1.classList.remove("is-complete");
-  progress_step1.classList.add("is-active");
-  currentSlide(n);
-}
-
-function opacity() {
-  if(slideIndex===1){
-      document.getElementById("mo_prev").setAttribute("style","opacity:0");
-      document.getElementById("mo_next").setAttribute("style","opacity:1.05");
-
-	}
-  else if(slideIndex===2) {      
-      document.getElementById("mo_prev").setAttribute("style","opacity:1.05");
-      document.getElementById("mo_next").setAttribute("style","opacity:0");}
-	      
-}
-  
-
-function showSlides(n) {
-  var i;
-  opacity();
-  var slides = document.getElementsByClassName("mySlides");
-  if (n > slides.length) {slideIndex = 1}    
-  if (n < 1) {slideIndex = slides.length}
-  for (i = 0; i < slides.length; i++) {
-      slides[i].style.display = "none";  
-  }
-  
-  slides[slideIndex-1].style.display = "block";  
-}
-
-function copyToClipboard(copyButton, element, copyelement) {
-	var temp = jQuery("<input>");
-	jQuery("body").append(temp);
-	temp.val(jQuery(element).text()).select();
-	document.execCommand("copy");
-	temp.remove();
-	jQuery(copyelement).text("Copied");
-
-	jQuery(copyButton).mouseout(function(){
-		jQuery(copyelement).text("Copy to Clipboard");
-	});
-  }
-
-
-jQuery("#idpguide").on("change", function() {
-					var selectedIdp =  jQuery(this).find("option:selected").val();
-
-						jQuery("#idpsetuplink").css("display","inline");
-						selectedIdp = selectedIdp + "_as_idp.pdf";
-						selectedIdp = "'. plugins_url('resources/idp-setup-guides/', __FILE__) .'" + selectedIdp;
-						jQuery("#idpsetuplink").attr("href",selectedIdp);
-
-				});
-</script>
-		
-
-
-';
-
-}
-function mo_saml_download() {
-
-	if ( array_key_exists( "option", $_POST ) && $_POST['option'] == 'mo_saml_download_cert' && check_admin_referer('mo_saml_download_cert')) {
-
-		$content = get_option('mo_saml_current_cert');
-
-		header('Content-Type: application/crt');
-		header( 'Content-Disposition: attachment; filename="sp-certificate.crt"' );
-		echo( $content );
-		exit;
-	}
-
-    if ( array_key_exists( "option", $_POST ) && $_POST['option'] == 'mo_saml_download_new_cert' && check_admin_referer('mo_saml_download_new_cert')) {
-
-        $cert = file_get_contents(plugin_dir_path(__DIR__) . 'resources' . DIRECTORY_SEPARATOR . 'miniorange_sp_2020.crt');
-        header('Content-Type: application/crt');
-        header( 'Content-Disposition: attachment; filename="miniorange_sp_2020.crt"' );
-        echo( $cert );
-        exit;
+function mo_saml_configuration_steps()
+{
+    $f4 = get_option("\155\157\x5f\x73\x61\x6d\x6c\x5f\163\x70\x5f\x62\141\163\x65\x5f\x75\x72\154") ?: home_url();
+    $fK = get_option("\x6d\157\137\x73\141\x6d\x6c\137\x73\160\137\x65\x6e\164\x69\x74\x79\x5f\x69\x64") ?: $f4 . "\57\167\160\55\x63\157\x6e\x74\145\x6e\x74\x2f\160\x6c\x75\x67\151\156\163\57\x6d\151\156\151\157\162\141\156\x67\145\x2d\x73\141\x6d\x6c\55\62\60\x2d\163\x69\x6e\147\154\145\x2d\163\x69\147\156\55\x6f\156\x2f";
+    $gn = get_option("\163\x61\155\x6c\x5f\x6e\x61\x6d\145\151\x64\137\146\x6f\x72\x6d\x61\164");
+    if (!empty($gn)) {
+        goto IF1;
     }
-
-	if ( array_key_exists( "option", $_POST ) && $_POST['option'] == 'mo_saml_download_metadata' && check_admin_referer('mo_saml_download_metadata') ) {
-		miniorange_generate_metadata(true);
-	}
-
-    if ( array_key_exists( "option", $_POST ) && $_POST['option'] == 'mo_saml_download_new_metadata' && check_admin_referer('mo_saml_download_new_metadata') ) {
-        miniorange_generate_metadata(true,true);
+    $gn = "\61\56\61\x3a\x6e\x61\155\x65\151\x64\55\146\x6f\x72\155\141\164\x3a\145\x6d\141\x69\x6c\x41\x64\144\x72\145\163\163";
+    IF1:
+    $WC = mo_saml_is_customer_license_key_verified() ? add_query_arg(array("\164\x61\142" => "\x73\x61\166\145", "\141\143\x74\151\157\156" => "\x75\160\154\157\141\144\x5f\155\x65\x74\x61\144\141\x74\x61"), $_SERVER["\x52\x45\x51\x55\x45\123\124\x5f\125\x52\111"]) : "\x6a\x61\166\141\163\143\x72\151\160\164\x3a\40\166\x6f\x69\144\x28\x30\x29";
+    $Eh = mo_saml_is_customer_license_key_verified() ? add_query_arg(array("\164\141\x62" => "\163\x61\166\145"), $_SERVER["\122\x45\121\x55\x45\x53\124\x5f\125\x52\x49"]) : "\x6a\x61\166\141\x73\143\x72\x69\160\x74\x3a\x76\157\x69\x64\50\x30\x29";
+    $OA = mo_saml_is_customer_license_key_verified() ? "\x6f\156\143\x6c\151\143\x6b\75\x22\144\x6f\143\x75\x6d\145\x6e\x74\x2e\146\157\x72\x6d\163\133\x27\x6d\x6f\x5f\x73\141\155\x6c\137\x64\157\x77\x6e\x6c\157\141\x64\x27\x5d\56\163\x75\142\155\151\x74\x28\51\73\x22" : "\152\x61\166\x61\163\143\162\151\160\164\72\40\166\157\151\144\50\x30\51";
+    $Hs = mo_saml_is_customer_license_key_verified() ? $f4 . "\x2f\77\x6f\160\x74\x69\157\x6e\75\x6d\x6f\x73\x61\155\x6c\x5f\155\x65\164\141\144\141\x74\x61" : "\x6a\141\x76\x61\163\x63\162\x69\160\x74\72\166\x6f\x69\144\50\x30\51";
+    echo "\74\151\x6e\160\x75\x74\x20\164\171\160\145\x3d\x22\150\151\x64\144\145\x6e\42\x20\x6e\141\155\x65\75\42\157\160\x74\151\157\156\42\40\x76\141\x6c\x75\x65\75\x22\155\157\137\x73\141\155\x6c\x5f\151\x64\x70\x5f\x63\157\x6e\x66\151\x67\42\40\x2f\76\15\xa\x9\11\xd\xa\15\12\x3c\x64\x69\166\x20\143\154\x61\163\x73\x3d\x22\163\154\151\144\145\163\150\157\x77\x2d\143\x6f\x6e\x74\141\x69\x6e\145\162\x20\42\76\xd\xa\11\x3c\x64\x69\166\40\x69\144\x3d\x22\x70\141\162\x65\156\164\x22\76\xd\xa\x9\74\144\151\166\x20\x63\x6c\x61\163\163\75\42\x6d\x6f\x5f\160\x72\x65\x76\42\40\x20\157\156\143\x6c\151\x63\x6b\75\42\x70\154\x75\163\x53\x6c\151\144\145\x73\50\55\61\x29\73\143\150\x61\x6e\x67\x65\124\x72\x61\143\153\145\x72\146\157\x72\x53\x74\x65\x70\x31\x28\x31\51\x3b\42\40\163\164\171\x6c\x65\75\42\172\x2d\151\156\x64\x65\170\x3a\x20\x32\x22\40\x69\x64\x3d\x22\x6d\x6f\x5f\x70\x72\x65\166\x22\x3e\74\163\x70\141\156\x20\151\144\75\x22\155\x6f\137\x70\x72\145\x76\137\160\157\151\x6e\x74\x65\x72\42\76\x26\43\x31\60\60\x39\x34\73\74\x2f\163\x70\141\x6e\76\74\x2f\x64\x69\166\x3e\xd\12\11\x3c\144\x69\x76\40\x63\154\x61\x73\163\75\42\155\x6f\x5f\156\145\x78\x74\x22\x20\x20\163\164\171\154\x65\75\x22\x7a\55\x69\x6e\x64\x65\x78\x3a\x20\x32\42\x20\157\156\x63\154\151\x63\x6b\x3d\x22\160\x6c\x75\x73\123\154\x69\x64\145\163\50\x31\51\73\143\x68\x61\156\147\145\124\162\x61\x63\153\145\162\146\157\x72\123\164\x65\x70\x32\x28\62\x29\42\x20\x69\x64\75\42\x6d\157\x5f\x6e\x65\x78\164\42\76\x3c\x73\160\141\156\x20\151\144\x3d\42\155\x6f\x5f\156\x65\x78\x74\137\160\x6f\151\156\x74\x65\x72\x22\76\x26\43\x31\x30\x30\71\x35\73\x3c\57\163\x70\141\156\76\74\57\144\x69\166\x3e\15\xa\x9\74\x2f\x64\151\x76\76\15\12\11\x20\40\40\x20\15\12\11\74\164\x61\x62\x6c\145\40\167\x69\x64\164\150\75\x22\71\x38\x25\42\x20\x62\157\x72\144\x65\162\75\x22\x30\x22\x20\x63\154\x61\x73\x73\75\x22\x70\x72\x6f\147\162\x65\x73\163\x2d\x74\x72\x61\x63\x6b\145\162\x2d\164\141\x62\x6c\145\42\x3e\xd\xa\x9\40\x20\x20\40\74\164\x72\x3e\74\164\x64\76";
+    check_plugin_state();
+    echo "\xd\xa\xd\12\x3c\57\164\144\76\74\x2f\x74\x72\76\xd\12\15\xa\11\x9\15\12\74\x74\162\76\x3c\x74\144\x3e\15\xa\xd\12\x3c\165\x6c\40\143\x6c\141\163\x73\75\x22\160\x72\157\x67\162\x65\x73\163\x2d\164\x72\141\143\153\145\162\40\x70\162\x6f\147\162\145\x73\x73\55\164\x72\x61\143\x6b\145\162\x2d\55\164\x65\170\x74\40\160\x72\x6f\x67\x72\145\163\x73\55\x74\x72\x61\143\153\x65\x72\x2d\x2d\x63\x65\x6e\x74\x65\162\x20\x61\156\151\x6d\55\160\x61\164\150\x20\141\156\151\155\x2d\162\151\160\160\x6c\145\42\40\76\15\xa\40\40\x3c\154\x69\40\x63\x6c\141\163\163\x3d\42\x70\x72\x6f\x67\162\x65\x73\163\x2d\x73\x74\145\x70\x20\151\x73\55\x61\143\x74\151\166\x65\x22\x20\151\x64\x3d\42\160\x72\157\x67\x72\x65\163\x73\137\163\x74\x65\160\61\42\76\xd\xa\40\x20\40\x20\x3c\x73\160\141\156\40\x63\x6c\141\x73\x73\75\x22\x70\x72\x6f\x67\x72\x65\163\163\55\155\x61\x72\153\x65\x72\42\40\x69\x64\x3d\x22\x74\x72\141\x63\153\x65\x72\x5f\163\164\x65\x70\x31\x22\x20\157\156\143\x6c\151\x63\153\x3d\x22\143\150\x61\156\x67\x65\x54\x72\x61\x63\x6b\145\162\x66\157\162\x53\x74\x65\160\x31\x28\x31\51\x22\x3e\61\x3c\57\163\160\x61\x6e\76\xd\xa\40\x20\40\40\x3c\163\160\141\156\x20\143\x6c\141\x73\163\75\42\160\x72\157\147\162\x65\x73\x73\55\x74\145\x78\164\x22\x3e\15\xa\40\40\40\x20\40\x43\157\x6e\x66\x69\x67\165\x72\145\x20\x79\x6f\x75\162\x20\x49\144\145\156\164\x69\x74\171\40\120\162\157\166\151\144\145\x72\x20\xd\xa\40\40\40\40\74\x2f\163\160\141\x6e\76\15\xa\40\x20\74\57\x6c\x69\76\xd\xa\xd\12\x20\40\x3c\x6c\151\x20\143\x6c\x61\163\x73\75\42\160\x72\157\x67\162\x65\163\x73\x2d\x73\164\145\160\42\x20\x20\151\x64\75\x22\160\x72\157\147\162\x65\163\x73\137\x73\x74\145\x70\x32\42\x3e\xd\12\x20\x20\x20\x20\x3c\163\160\141\156\x20\143\154\141\x73\163\75\x22\160\162\157\147\x72\145\163\163\55\155\141\162\x6b\x65\162\42\40\x6f\x6e\143\x6c\151\143\153\x3d\42\x63\x68\x61\x6e\147\145\124\162\141\143\x6b\x65\162\146\157\x72\123\164\x65\160\62\50\x32\x29\x22\40\x69\x64\75\x22\164\x72\141\143\x6b\x65\162\x5f\x73\x74\145\x70\62\x22\76\x32\74\x2f\x73\x70\141\x6e\x3e\15\xa\40\40\40\x20\74\x73\x70\x61\156\40\x63\154\141\163\x73\x3d\x22\x70\x72\x6f\147\x72\x65\163\x73\55\x74\145\170\x74\42\76\15\12\40\x20\x20\40\x20\40\103\157\156\x66\x69\147\165\162\145\40\x53\x65\162\x76\x69\x63\x65\x20\120\x72\x6f\166\151\x64\145\x72\xd\xa\40\40\x20\x20\74\57\x73\160\141\x6e\76\xd\12\x20\x20\74\57\x6c\x69\76\15\xa\xd\xa\x3c\57\x75\154\76\15\xa\xd\12\x9\11\74\144\151\x76\40\x63\154\141\x73\163\x3d\42\155\171\123\154\x69\144\x65\x73\40\146\141\144\145\42\x3e\xd\12\11\x9\xd\12\11\x9\x3c\x68\x33\x20\x73\164\171\x6c\x65\x3d\42\164\145\170\164\x2d\141\x6c\x69\147\x6e\x3a\x20\143\x65\x6e\164\x65\162\42\x3e\103\157\156\146\x69\147\165\x72\145\x20\x79\157\x75\162\40\111\144\145\156\164\x69\164\x79\40\120\162\x6f\x76\x69\x64\145\x72\40\74\x2f\150\63\x3e\15\12\11\x9\x3c\150\x34\x3e\x50\x72\x6f\x76\x69\144\x65\40\164\150\x69\x73\x20\160\x6c\165\x67\x69\x6e\40\x69\156\146\x6f\162\155\141\x74\x69\x6f\x6e\x20\x74\x6f\40\171\157\165\162\x20\x49\x64\x65\156\x74\x69\164\171\40\120\x72\x6f\x76\151\x64\145\x72\40\x74\x65\x61\155\56\x20\x59\x6f\165\x20\x63\141\x6e\x20\143\x68\x6f\157\163\x65\40\x61\156\x79\40\x6f\156\145\40\157\x66\x20\164\x68\145\40\142\145\154\157\x77\40\157\x70\x74\x69\x6f\156\x73\72\x3c\57\150\x34\x3e\xd\xa\x9\x9\x3c\x70\76\74\x62\x3e\141\x29\40\120\162\x6f\x76\x69\x64\x65\x20\164\150\x69\163\x20\x6d\x65\x74\x61\144\141\164\141\x20\125\x52\x4c\40\164\157\x20\x79\x6f\165\162\x20\x49\144\x65\156\x74\x69\x74\171\x20\x50\x72\157\166\x69\x64\145\x72\x20\74\x2f\x62\76\x3c\x2f\160\76\15\12\11\11\74\160\40\163\164\x79\154\145\75\x22\155\141\162\147\x69\x6e\55\x6c\145\x66\164\x3a\40\62\45\x22\76\74\x63\157\x64\x65\76\74\x62\76\x3c\141\x20\x69\144\75\x22\155\145\164\141\144\x61\164\141\137\x75\x72\154\x22\x20\164\141\x72\x67\145\x74\x3d\x22\x5f\142\154\x61\x6e\153\42\40\x68\162\145\146\75\x22" . $Hs . "\x22\x20" . mo_saml_is_customer_license_key_verified(true) . "\x20\76" . $f4 . "\57\x3f\157\160\x74\x69\157\x6e\75\x6d\157\163\141\x6d\154\x5f\x6d\145\164\x61\144\141\164\x61\x3c\x2f\x61\76\74\57\x62\x3e\74\x2f\x63\157\x64\x65\x3e\15\12\x9\11\x3c\x69\40\x63\x6c\x61\x73\x73\x3d\x22\x66\141\x20\146\141\55\x66\x77\x20\x66\x61\x2d\x6c\147\x20\x66\141\55\x63\157\x70\171\40\155\x6f\x5f\143\157\160\x79\40\143\157\160\171\x74\x6f\x6f\x6c\x74\x69\x70\42\x20\x6f\156\143\154\x69\x63\x6b\75\42\x63\x6f\x70\171\x54\x6f\103\154\x69\x70\x62\x6f\x61\x72\144\50\164\150\x69\x73\x2c\40\x27\43\x6d\x65\164\141\x64\141\164\141\x5f\x75\162\x6c\47\54\40\47\x23\x6d\x65\164\x61\144\x61\x74\x61\x5f\x75\x72\154\137\x63\157\x70\x79\47\51\x3b\42\x3e\74\163\160\141\156\x20\151\x64\75\42\155\145\164\141\x64\x61\164\x61\x5f\165\x72\154\x5f\x63\x6f\x70\171\42\x20\x63\154\141\163\x73\x3d\42\x63\157\x70\x79\x74\157\157\154\x74\151\160\164\x65\170\164\42\76\x43\157\160\x79\40\164\x6f\x20\103\154\x69\x70\x62\157\x61\162\144\74\x2f\163\x70\x61\x6e\76\74\57\151\76\15\12\11\11\x3c\57\x70\x3e\40\x20\40\x20\15\12\40\40\40\x20\x20\x20\x20\40\74\160\76\74\142\76\142\51\x20\x44\157\167\x6e\154\x6f\141\x64\40\164\x68\x65\40\120\x6c\165\x67\151\x6e\x20\130\115\114\x20\155\x65\x74\141\144\141\x74\141\40\x61\156\x64\x20\x75\160\154\x6f\x61\144\x20\x69\x74\x20\157\156\x20\171\x6f\165\x72\40\111\x64\145\156\164\x69\x74\x79\40\x50\x72\x6f\166\x69\144\x65\162\x20\x3c\57\x62\76\x3c\x2f\x70\76\11\11\x9\11\xd\12\11\x9\74\x70\40\x3e\74\x66\157\162\155\40\155\x65\x74\x68\157\x64\75\x22\160\157\x73\x74\42\x20\141\143\164\x69\x6f\x6e\75\42\42\76";
+    wp_nonce_field("\155\x6f\137\163\141\x6d\x6c\x5f\x64\x6f\x77\x6e\x6c\x6f\x61\144\137\x6d\145\164\141\144\x61\x74\x61");
+    echo "\74\151\x6e\160\165\164\40\x74\x79\160\145\x3d\x22\x68\x69\x64\144\145\x6e\42\40\x6e\141\x6d\x65\75\x22\157\x70\x74\151\x6f\x6e\42\40\x76\x61\x6c\x75\145\75\42\155\x6f\137\x73\x61\x6d\154\137\x64\157\x77\x6e\x6c\x6f\141\x64\x5f\155\145\164\141\144\141\164\141\42\x2f\x3e\x20\15\12\x20\40\40\x20\x20\40\40\40\74\151\156\160\165\x74\x20\164\171\x70\145\75\x22\x73\x75\x62\155\x69\x74\42\40\143\x6c\141\163\x73\x3d\42\x62\165\x74\x74\157\x6e\x20\142\165\164\164\x6f\156\55\160\x72\151\155\141\162\171\x20\142\165\x74\164\157\x6e\x2d\x6c\x61\x72\147\x65\42\40\40\166\141\154\165\145\x3d\42\x44\157\167\x6e\154\x6f\141\144\x20\x58\x4d\114\x20\115\145\164\x61\x64\141\x74\x61\42\x20\x73\164\x79\154\x65\x3d\42\x6d\x61\162\x67\x69\156\55\154\145\146\x74\x3a\40\x32\x25\x22\x20" . mo_saml_is_customer_license_key_verified(true) . "\40\x2f\76\74\x2f\146\157\162\x6d\76\x3c\x2f\160\76\xd\12\11\11\x3c\x70\x3e\74\x62\76\x63\x29\x20\x50\162\x6f\166\151\x64\x65\x20\x74\150\x65\x20\x66\x6f\x6c\x6c\x6f\167\151\x6e\147\40\x69\x6e\x66\x6f\x72\x6d\x61\164\151\157\x6e\40\x74\157\x20\171\157\165\x72\x20\x49\x64\x65\156\x74\151\164\171\40\x50\162\x6f\x76\x69\144\x65\162\56\74\57\x62\x3e\x3c\57\x70\76\xd\12\11\x9\15\12\x9\11\74\x74\x61\x62\x6c\x65\x20\142\x6f\162\144\x65\x72\x3d\x22\61\x22\40\163\x74\x79\x6c\145\75\x22\x62\141\143\153\147\162\x6f\x75\156\x64\55\143\x6f\154\x6f\x72\72\x23\106\106\106\x46\106\x46\x3b\40\142\x6f\162\x64\145\x72\72\x31\x70\170\x20\x73\x6f\x6c\x69\144\40\43\103\103\x43\x43\103\x43\73\40\160\x61\x64\144\x69\x6e\147\x3a\x30\160\x78\x20\x30\x70\170\40\x30\x70\x78\x20\x31\x30\160\x78\73\x20\x6d\141\x72\147\151\156\72\62\160\170\x3b\40\x62\157\162\x64\145\x72\55\143\x6f\154\x6c\141\x70\x73\145\x3a\x20\143\x6f\x6c\x6c\141\160\163\145\73\40\x77\x69\x64\164\150\x3a\71\70\45\42\x3e\15\12\x9\x9\11\15\xa\11\11\11\11\74\146\157\x72\155\40\x6d\145\164\150\157\x64\75\42\160\x6f\x73\164\42\40\x61\x63\164\151\x6f\x6e\75\x22\x22\x20\156\141\155\x65\75\42\155\x6f\x5f\163\141\x6d\x6c\x5f\x64\157\x77\x6e\x6c\x6f\141\x64\x22\76";
+    wp_nonce_field("\x6d\157\137\x73\141\x6d\154\x5f\x64\x6f\167\156\154\157\141\144\x5f\143\145\162\x74");
+    echo "\x3c\x69\156\160\x75\x74\40\164\x79\160\145\x3d\42\150\x69\144\144\145\156\x22\40\x6e\x61\155\x65\75\x22\157\160\164\x69\x6f\x6e\42\40\166\141\154\x75\145\75\x22\155\x6f\x5f\163\x61\155\x6c\137\x64\157\x77\x6e\x6c\157\x61\x64\137\143\145\x72\164\x22\40\57\x3e\74\57\x66\157\x72\x6d\76\15\12\11\x9\11\11\x9\74\x74\162\x3e\15\12\11\11\11\x9\x9\x9\74\164\x64\40\x73\164\x79\x6c\145\75\x22\x77\151\144\x74\x68\x3a\x34\60\45\73\x20\x70\141\144\144\x69\x6e\147\72\x20\x31\x35\x70\170\73\42\x3e\x3c\142\76\x53\x50\55\105\156\x74\151\164\171\111\x44\40\57\40\111\163\163\165\x65\162\74\x2f\x62\x3e\x3c\57\x74\144\76\15\12\x9\x9\11\11\11\x9\x3c\164\x64\40\x73\x74\171\154\145\x3d\x22\167\x69\144\164\x68\x3a\66\60\x25\73\x20\160\x61\144\x64\x69\x6e\x67\72\x20\61\65\x70\x78\73\42\76\x3c\x74\141\142\x6c\x65\x20\x77\151\144\x74\x68\75\x22\61\60\x30\x25\x22\76\74\164\x72\76\x3c\164\x64\x3e\74\x73\160\141\156\40\x69\144\75\x22\145\x6e\x74\x69\164\x79\x5f\151\x64\42\76" . $fK . "\x3c\57\163\160\x61\x6e\x3e\74\x2f\x74\144\76\xd\12\11\x9\11\x9\11\x9\x3c\164\x64\x3e\x3c\151\x20\x63\154\x61\x73\x73\x3d\x22\146\x61\40\146\141\x2d\x66\167\40\x66\x61\x2d\154\x67\40\x66\x61\x2d\x70\165\x6c\x6c\x2d\162\151\147\150\x74\x20\146\141\x2d\143\x6f\160\x79\x20\x6d\157\x5f\x63\x6f\x70\171\40\x63\x6f\160\x79\164\157\157\x6c\164\x69\160\x22\40\x6f\x6e\143\x6c\151\143\153\75\42\x63\157\160\x79\x54\x6f\103\x6c\x69\x70\x62\157\141\162\144\x28\x74\x68\x69\x73\54\x20\x27\43\x65\x6e\x74\x69\x74\171\137\151\144\x27\x2c\40\47\x23\x65\156\164\x69\164\x79\x5f\x69\144\137\x63\x6f\160\171\x27\51\73\x22\x3e\x3c\x73\160\x61\156\40\x69\144\x3d\42\x65\x6e\x74\151\x74\171\137\x69\x64\137\x63\x6f\160\x79\x22\40\143\x6c\x61\163\163\x3d\x22\x63\x6f\x70\171\x74\157\157\154\x74\151\x70\164\x65\x78\164\42\x3e\x43\157\x70\171\40\x74\157\40\x43\x6c\x69\160\142\x6f\x61\x72\x64\74\57\163\x70\x61\156\76\74\x2f\x69\76\x3c\57\164\144\76\x3c\x2f\x74\x72\76\x3c\57\164\141\x62\154\x65\76\xd\xa\x9\11\11\11\11\11\x3c\x2f\164\x64\x3e\xd\xa\xd\xa\x9\x9\x9\11\11\x3c\57\x74\162\76\xd\xa\x9\11\11\11\x9\74\x74\x72\x3e\15\xa\11\x9\x9\x9\11\11\x3c\x74\144\x20\x73\164\171\154\145\x3d\42\167\x69\144\x74\x68\x3a\x34\x30\x25\73\x20\x70\x61\x64\x64\x69\x6e\x67\x3a\x20\61\65\x70\170\73\x22\76\x3c\142\76\x41\103\x53\x20\x28\x41\x73\163\145\x72\x74\x69\157\156\x43\157\156\163\165\x6d\x65\x72\x53\145\x72\x76\x69\x63\145\51\x20\x55\x52\114\74\57\x62\x3e\x3c\57\164\144\76\xd\12\11\11\11\11\x9\x9\x3c\x74\x64\x20\163\164\x79\x6c\145\x3d\42\x77\151\x64\164\150\x3a\x36\x30\x25\73\40\40\x70\141\144\x64\151\156\147\x3a\x20\61\x35\160\x78\x3b\x22\76\74\x74\x61\x62\154\145\x20\x77\151\144\x74\150\x3d\x22\61\60\x30\45\x22\x3e\x3c\x74\162\76\x3c\164\144\x3e\74\x73\160\x61\x6e\x20\151\144\75\42\x62\x61\x73\x65\x5f\x75\x72\154\42\76" . $f4 . "\57\74\x2f\163\x70\x61\x6e\x3e\74\57\164\144\x3e\15\xa\x9\11\x9\11\x9\11\74\164\x64\76\74\x69\40\x63\x6c\x61\x73\163\75\42\146\141\40\146\x61\x2d\x66\167\x20\x66\x61\55\160\165\x6c\x6c\55\x72\x69\x67\x68\x74\x20\146\141\x2d\x6c\147\40\146\x61\55\143\157\x70\171\40\x6d\x6f\137\143\x6f\160\x79\x20\x63\157\160\171\x74\157\x6f\x6c\x74\x69\x70\42\x20\157\156\143\x6c\x69\x63\153\x3d\42\143\x6f\x70\x79\x54\x6f\103\x6c\151\x70\142\x6f\141\x72\x64\x28\x74\150\151\x73\54\x20\x27\43\x62\141\x73\145\137\x75\162\154\47\x2c\x20\x27\43\x62\141\163\x65\x5f\x75\x72\x6c\137\x63\x6f\160\x79\47\x29\x3b\x22\76\74\163\x70\x61\x6e\40\x69\144\75\x22\142\x61\163\145\137\165\162\x6c\x5f\x63\x6f\160\x79\x22\x20\x63\154\141\x73\163\75\42\x63\x6f\160\x79\x74\157\157\154\x74\x69\160\164\145\170\x74\42\76\103\157\x70\x79\x20\164\x6f\40\x43\x6c\151\160\x62\x6f\x61\162\x64\74\x2f\163\x70\x61\156\76\x3c\x2f\151\76\74\x2f\164\x64\x3e\74\x2f\164\x72\x3e\74\x2f\164\141\x62\x6c\145\x3e\15\xa\x9\x9\x9\11\11\11\x3c\x2f\164\x64\76\15\12\15\xa\x9\11\11\x9\11\74\x2f\x74\162\x3e\15\12\xd\12\x9\x9\11\x9\11\74\164\162\x3e\15\12\11\x9\11\x9\x9\x9\x3c\164\144\x20\x73\164\x79\x6c\145\x3d\x22\167\x69\x64\x74\150\x3a\64\60\45\x3b\40\160\141\x64\x64\151\x6e\147\72\40\x31\65\160\170\73\42\76\74\x62\76\x41\x75\x64\151\x65\156\x63\x65\x20\125\122\111\x3c\x2f\142\x3e\74\57\x74\x64\x3e\xd\12\x9\x9\x9\11\x9\x9\x3c\x74\x64\x20\x73\164\x79\154\145\75\x22\167\151\144\164\x68\72\66\x30\x25\x3b\40\160\141\x64\x64\x69\156\x67\72\x20\61\65\x70\170\x3b\42\x3e\x3c\164\x61\x62\x6c\145\x20\167\x69\x64\x74\x68\75\42\x31\x30\60\x25\x22\x3e\74\x74\162\76\74\x74\144\76\x3c\x73\x70\x61\156\x20\151\x64\x3d\x22\141\165\144\151\145\x6e\143\145\42\76" . $fK . "\74\57\x73\160\x61\x6e\x3e\x3c\57\164\144\x3e\15\xa\x9\x9\11\11\x9\x9\74\x74\144\x3e\x3c\151\x20\x63\x6c\141\x73\163\75\x22\146\141\40\x66\141\x2d\x66\167\x20\146\141\x2d\160\x75\154\154\x2d\x72\151\x67\150\164\40\x66\141\55\x6c\x67\x20\x66\141\x2d\x63\x6f\x70\x79\40\155\157\x5f\143\x6f\x70\x79\40\143\157\160\171\x74\157\157\x6c\x74\151\x70\x22\40\157\x6e\143\154\x69\x63\153\x3d\42\x63\157\160\x79\124\x6f\x43\x6c\x69\x70\x62\x6f\x61\x72\144\x28\164\x68\151\163\x2c\x20\47\x23\141\x75\x64\x69\145\x6e\x63\x65\x27\x2c\x27\x23\x61\x75\144\151\x65\x6e\143\x65\x5f\x63\157\160\171\47\51\x3b\42\x3e\x3c\163\160\141\x6e\x20\151\144\x3d\x22\141\x75\144\x69\x65\x6e\x63\145\137\143\157\160\x79\42\40\x63\x6c\x61\163\x73\x3d\42\143\x6f\160\x79\164\157\x6f\x6c\164\x69\160\x74\145\x78\164\x22\x3e\103\x6f\x70\171\x20\x74\x6f\40\103\x6c\x69\x70\x62\157\141\x72\x64\x3c\x2f\x73\x70\141\156\x3e\74\57\151\76\74\x2f\x74\x64\76\x3c\x2f\164\162\76\x3c\x2f\x74\x61\x62\x6c\x65\76\15\12\11\11\x9\11\x9\x9\74\x2f\x74\x64\76\15\12\15\xa\11\x9\x9\x9\x9\74\x2f\x74\162\76\xd\12\x9\x9\11\x9\x9\x3c\164\x72\76\15\12\11\11\x9\x9\x9\11\74\164\144\x20\x73\x74\171\x6c\145\75\x22\x77\x69\144\164\150\x3a\x34\60\x25\73\40\160\x61\x64\144\151\156\147\72\40\61\65\160\x78\73\x22\76\74\142\x3e\x4e\x61\155\x65\111\104\x20\146\x6f\162\x6d\x61\x74\x3c\x2f\142\x3e\x3c\x2f\164\x64\76\xd\xa\x9\11\11\x9\11\x9\74\x74\x64\x20\163\164\x79\154\145\75\42\167\x69\x64\x74\150\x3a\x36\60\45\73\x20\160\141\x64\144\x69\156\147\x3a\40\x31\x35\160\x78\x3b\42\x3e\74\x74\x61\142\154\145\40\x77\x69\x64\x74\150\75\x22\x31\x30\60\45\x22\76\74\x74\x72\76\x3c\164\144\76\74\163\x70\141\156\40\151\144\75\x22\156\x61\x6d\x65\x69\x64\x22\76\165\162\156\72\x6f\141\x73\x69\x73\x3a\x6e\141\x6d\145\x73\x3a\x74\x63\x3a\x53\101\x4d\x4c\x3a" . $gn . "\x3c\x2f\163\x70\141\156\x3e\74\57\x74\x64\76\xd\12\x9\x9\11\11\x9\x9\74\164\x64\76\74\151\40\x63\x6c\x61\x73\163\x3d\x22\x66\141\x20\x66\x61\55\x66\167\40\146\x61\x2d\160\x75\x6c\x6c\x2d\162\x69\x67\150\x74\40\146\141\x2d\154\147\40\146\x61\55\143\x6f\x70\x79\x20\x6d\157\137\x63\157\160\171\40\x63\x6f\160\171\x74\157\x6f\154\x74\151\160\x22\40\157\156\x63\x6c\151\x63\153\75\42\143\x6f\160\171\x54\157\x43\154\151\x70\x62\157\x61\x72\x64\50\x74\x68\x69\x73\54\40\47\x23\156\141\x6d\x65\151\144\x27\x2c\x20\47\x23\x6e\x61\155\145\x69\144\x5f\x63\x6f\160\x79\47\x29\x3b\x22\x3e\x3c\x73\x70\x61\x6e\40\151\x64\75\42\156\x61\155\145\151\144\x5f\143\157\x70\171\42\40\143\154\141\163\x73\x3d\x22\x63\157\160\x79\164\x6f\157\154\164\x69\x70\164\x65\170\x74\x22\76\103\157\x70\x79\x20\164\x6f\x20\103\154\x69\x70\142\157\141\x72\x64\74\57\163\x70\141\x6e\76\74\57\151\x3e\74\57\164\144\x3e\74\x2f\164\x72\76\74\x2f\164\141\x62\x6c\145\x3e\15\xa\x9\11\x9\x9\x9\x9\x3c\x2f\x74\x64\x3e\15\12\15\xa\x9\x9\x9\11\11\74\57\164\162\76\xd\xa\x9\x9\x9\11\11\74\x74\x72\x3e\xd\12\x9\x9\x9\x9\11\x9\x3c\164\x64\x20\x73\164\x79\x6c\145\75\x22\167\151\x64\x74\150\72\x34\60\45\x3b\x20\160\x61\144\144\151\x6e\x67\72\40\x31\x35\160\170\73\42\x3e\x3c\x62\76\x52\x65\x63\151\160\151\x65\x6e\164\40\x55\x52\x4c\74\57\x62\x3e\74\x2f\164\x64\x3e\15\xa\11\11\x9\11\x9\11\74\x74\144\40\163\164\x79\x6c\x65\75\x22\x77\x69\144\164\x68\72\66\x30\45\x3b\40\40\x70\141\x64\144\151\156\147\x3a\40\x31\65\160\170\x3b\42\x3e\74\164\141\142\154\x65\x20\x77\x69\x64\x74\x68\75\x22\61\60\60\x25\x22\x3e\74\x74\x72\x3e\x3c\164\x64\76\x3c\x73\x70\x61\x6e\40\151\x64\75\42\162\x65\143\151\x70\151\x65\156\x74\x22\x3e" . $f4 . "\x2f\74\57\163\x70\141\156\x3e\74\57\x74\x64\x3e\15\12\x9\11\11\x9\11\11\74\x74\144\x3e\x3c\x69\40\143\x6c\x61\x73\163\75\x22\x66\x61\x20\x66\x61\x2d\x66\x77\40\x66\x61\x2d\x70\165\x6c\154\x2d\162\x69\x67\150\164\x20\146\141\x2d\x6c\x67\40\146\141\55\x63\x6f\160\171\x20\x6d\157\137\x63\157\160\171\x20\x63\x6f\160\x79\164\x6f\157\154\164\x69\160\x22\x20\157\x6e\x63\x6c\151\x63\x6b\x3d\x22\x63\157\160\x79\124\157\103\154\151\x70\x62\x6f\141\x72\x64\50\164\x68\151\x73\x2c\x20\x27\x23\162\x65\x63\x69\x70\151\145\x6e\164\x27\54\47\x23\x72\x65\143\x69\x70\x69\x65\x6e\164\x5f\x63\x6f\x70\x79\x27\x29\x3b\42\76\74\x73\x70\141\x6e\40\151\x64\x3d\42\162\145\x63\151\160\x69\145\156\164\x5f\x63\157\x70\x79\42\40\143\154\x61\x73\163\x3d\x22\x63\x6f\x70\171\x74\157\157\x6c\x74\x69\x70\164\145\x78\x74\x22\76\103\x6f\x70\171\40\x74\157\40\x43\x6c\x69\x70\142\x6f\141\x72\x64\74\57\x73\160\141\156\76\x3c\57\x69\76\x3c\x2f\164\144\x3e\74\57\x74\162\76\x3c\x2f\x74\x61\x62\x6c\x65\76\15\12\11\11\11\11\11\x9\74\x2f\x74\144\x3e\xd\xa\15\xa\x9\11\x9\11\x9\74\57\164\x72\76\xd\xa\11\x9\x9\x9\11\74\x74\162\x3e\xd\12\x9\11\x9\11\x9\11\74\x74\x64\x20\163\x74\171\x6c\x65\x3d\42\x77\x69\x64\x74\150\72\x34\x30\x25\73\x20\x70\x61\x64\144\x69\156\x67\x3a\x20\x31\65\160\x78\x3b\42\x3e\x3c\142\76\104\145\163\164\151\x6e\141\x74\x69\x6f\x6e\40\125\x52\x4c\74\x2f\142\x3e\x3c\57\164\x64\76\15\xa\x9\11\x9\x9\11\11\74\164\144\x20\163\x74\171\154\145\x3d\42\x77\x69\x64\x74\150\x3a\x36\x30\x25\x3b\x20\x20\160\141\144\144\151\156\147\72\40\x31\65\160\x78\x3b\42\76\74\x74\141\142\154\145\40\x77\x69\x64\164\150\x3d\42\61\x30\60\x25\x22\x3e\x3c\164\x72\x3e\x3c\164\x64\x3e\74\x73\160\141\156\x20\x69\x64\75\x22\x64\x65\163\x74\151\156\x61\x74\151\157\x6e\42\76" . $f4 . "\57\74\x2f\x73\160\141\x6e\76\74\57\x74\x64\76\xd\xa\11\11\x9\x9\x9\x9\x3c\164\x64\76\74\x69\40\143\x6c\x61\163\x73\75\x22\146\141\40\146\141\55\146\x77\x20\146\x61\55\160\x75\154\x6c\55\162\151\147\150\x74\40\146\141\x2d\x6c\x67\x20\146\x61\55\x63\x6f\160\171\x20\x6d\157\x5f\143\157\160\x79\x20\x63\157\x70\171\x74\157\157\x6c\164\151\160\x22\x20\157\x6e\143\154\x69\x63\x6b\75\42\x63\157\160\x79\124\x6f\103\x6c\x69\x70\x62\157\141\162\x64\50\x74\x68\151\163\x2c\40\47\43\144\145\x73\164\151\156\x61\164\x69\x6f\x6e\x27\54\47\43\x64\145\x73\164\x69\x6e\141\x74\151\x6f\x6e\137\143\157\x70\x79\x27\51\x3b\42\x3e\74\163\x70\x61\156\40\x69\144\75\x22\144\145\x73\x74\151\x6e\x61\164\151\157\x6e\137\x63\157\160\171\x22\40\143\154\x61\163\163\x3d\x22\x63\157\160\171\164\157\157\x6c\x74\151\160\x74\x65\170\x74\x22\x3e\x43\157\x70\171\40\164\157\x20\103\x6c\x69\x70\142\x6f\x61\162\144\x3c\57\x73\x70\x61\156\76\x3c\x2f\x69\76\74\x2f\164\x64\76\74\57\x74\162\76\x3c\x2f\x74\x61\x62\154\145\x3e\xd\12\x9\x9\11\11\11\11\x3c\x2f\x74\144\76\xd\xa\15\xa\x9\x9\11\x9\x9\74\57\164\162\76\15\12\11\11\11\11\11\74\164\x72\76\15\xa\x9\11\x9\x9\x9\11\74\164\144\x20\x73\x74\171\154\145\75\42\167\151\144\164\x68\72\64\60\x25\x3b\x20\x70\x61\144\144\x69\x6e\x67\72\x20\61\x35\x70\x78\73\42\76\x3c\x62\x3e\104\145\x66\x61\x75\154\x74\x20\122\145\154\x61\171\x20\x53\164\141\164\x65\40\x28\x4f\x70\x74\x69\x6f\x6e\x61\154\51\74\57\142\76\x3c\57\164\x64\76\xd\xa\11\x9\x9\x9\x9\x9\74\x74\144\40\x73\164\x79\x6c\x65\x3d\x22\167\x69\x64\x74\x68\x3a\66\60\45\x3b\40\x20\x70\x61\x64\144\151\x6e\x67\x3a\40\61\x35\x70\170\73\42\x3e\74\x74\141\142\x6c\x65\x20\167\151\x64\164\150\x3d\42\61\60\x30\45\x22\x3e\74\164\162\76\x3c\164\144\76\x3c\x73\x70\141\x6e\40\x69\144\x3d\42\162\145\x6c\x61\171\163\x74\x61\164\x65\x22\x3e" . $f4 . "\x2f\x3c\57\163\x70\x61\x6e\x3e\74\x2f\x74\144\76\xd\12\x9\x9\11\x9\11\11\x3c\x74\144\76\74\151\x20\x63\154\x61\x73\163\x3d\42\x66\141\x20\x66\x61\55\x66\167\x20\x66\141\55\160\x75\x6c\x6c\x2d\x72\x69\147\150\x74\x20\x66\x61\55\x6c\x67\40\x66\x61\x2d\143\157\x70\171\40\155\157\x5f\x63\x6f\160\x79\x20\x63\x6f\160\x79\x74\x6f\157\154\x74\x69\160\x22\x20\157\156\x63\x6c\x69\x63\x6b\x3d\x22\143\157\160\171\124\x6f\103\154\151\160\x62\x6f\x61\x72\x64\x28\164\150\x69\x73\x2c\40\x27\43\162\145\x6c\141\171\163\164\141\164\145\x27\x2c\40\x27\43\162\145\154\x61\x79\x73\164\141\164\x65\137\x63\x6f\x70\x79\47\51\73\x22\76\x3c\x73\160\x61\x6e\40\151\144\x3d\42\x72\145\154\x61\171\x73\164\x61\x74\145\137\143\157\160\x79\x22\x20\x63\x6c\x61\x73\x73\75\42\143\x6f\x70\171\164\x6f\x6f\x6c\x74\x69\x70\x74\x65\170\164\42\76\103\x6f\x70\171\40\164\x6f\40\x43\154\151\x70\142\157\141\162\144\x3c\x2f\163\x70\x61\x6e\76\x3c\x2f\x69\x3e\x3c\x2f\x74\x64\x3e\x3c\57\x74\162\76\x3c\x2f\x74\141\x62\154\x65\76\15\xa\11\11\x9\x9\x9\11\x3c\x2f\164\144\x3e\xd\12\xd\12\11\11\11\x9\11\x3c\x2f\x74\x72\76\15\12\11\x9\11\11\x9\x3c\x74\162\x3e\xd\xa\x9\11\11\x9\x9\x9\74\x74\144\x20\x73\164\171\154\145\x3d\x22\167\x69\144\x74\x68\x3a\64\60\45\73\x20\x70\141\x64\x64\x69\x6e\x67\x3a\x20\x31\x35\160\170\73\x22\x3e\74\142\76\x43\x65\162\164\x69\x66\151\x63\x61\164\145\40\50\117\160\164\x69\x6f\156\141\x6c\51\x3c\57\x62\x3e\x3c\x2f\x74\x64\x3e\xd\12\11\x9\11\x9\x9\x9\74\164\x64\40\163\x74\x79\154\145\75\x22\x77\151\144\x74\150\x3a\66\x30\45\x3b\40\x20\x70\141\x64\144\x69\x6e\147\72\x20\61\65\160\x78\x3b\x22\x3e\xd\xa\11\x9\x9\x9\x9\x9\x9\x3c\151\x6e\160\165\164\x20\164\x79\160\x65\x3d\x22\142\x75\164\x74\157\x6e\42\40\143\x6c\141\x73\x73\75\x22\x62\165\x74\164\x6f\x6e\x20\x62\x75\x74\164\x6f\x6e\x2d\160\x72\151\155\x61\x72\x79\42";
+    if (mo_saml_is_customer_license_key_verified()) {
+        goto Bo;
     }
-
-
-
-
-
+    echo "\x20\144\151\x73\141\142\x6c\x65\144\x20";
+    Bo:
+    echo $OA . "\x20\166\141\x6c\x75\x65\x3d\x22\104\157\167\156\x6c\x6f\141\x64\x22\x2f\76\15\12\x9\11\11\11\11\11\x3c\x2f\x74\144\76\xd\xa\15\xa\11\11\x9\x9\11\x3c\57\164\x72\x3e\xd\xa\11\x9\x9\11\11\74\x2f\x74\x61\x62\154\x65\x3e\15\xa\x9\x9\11\11\11\xd\xa\x9\15\xa\11\x3c\164\x72\x3e\15\xa\x9\11\xd\xa\x9\x9\74\164\x64\x20\x63\157\154\x73\x70\141\156\x3d\42\62\x22\x3e\15\xa\11\x9\x3c\x64\x69\166\x20\x63\x6c\141\x73\x73\75\x22\x6d\x79\123\154\x69\x64\145\x73\x20\146\141\144\145\42\x3e\15\12\x9\x9\xd\12\x9\11\x3c\150\63\x20\x73\164\171\x6c\145\x3d\42\x74\x65\x78\x74\55\141\x6c\151\147\156\72\x20\x63\145\x6e\164\x65\162\73\x22\x3e\x43\x6f\156\x66\x69\x67\x75\x72\x65\x20\123\x65\x72\166\151\143\145\40\x50\x72\x6f\166\x69\144\x65\x72\x3c\57\150\x33\x3e\15\xa\11\11\74\x68\64\x3e\x41\163\163\165\155\x69\x6e\147\x20\x79\x6f\165\x20\141\x72\x65\x20\x64\157\156\145\x20\167\151\x74\150\40\163\x74\x65\x70\40\x31\40\141\x6e\144\40\171\157\x75\40\141\x6c\162\x65\x61\144\171\x20\x68\x61\166\145\x20\x79\157\165\162\x20\111\x64\x65\156\x74\151\164\x79\40\x50\x72\x6f\166\x69\144\145\x72\x27\x73\40\155\145\x74\141\144\x61\x74\141\54\40\x79\x6f\165\x20\x63\x61\x6e\x20\156\x6f\x77\x20\x70\x72\157\143\x65\x65\x64\40\x77\151\164\150\x20\x63\157\156\x66\x69\147\x75\162\x69\156\147\x20\164\150\x65\40\123\145\162\166\151\x63\x65\x20\120\162\x6f\x76\x69\144\145\x72\x20\x69\x6e\40\145\151\x74\x68\x65\x72\40\157\x66\x20\164\x68\x65\x20\146\x6f\x6c\x6c\157\x77\151\156\x67\40\164\x77\157\x20\167\x61\171\x73\x2e\74\57\150\64\x3e\15\12\11\11\74\160\x20\163\x74\171\x6c\145\75\x22\x74\x65\x78\164\x2d\x61\154\x69\147\x6e\72\40\x63\145\x6e\x74\145\162\x22\x3e\74\142\x3e\15\12\x9\11\x3c\x61\x20\143\x6c\x61\x73\163\75\x22\142\165\164\164\x6f\x6e\x20\x62\165\164\x74\157\x6e\55\x70\162\151\155\x61\162\171\40\142\165\x74\x74\x6f\156\x2d\154\x61\162\x67\145\x22\x20\150\162\x65\146\x3d\x22" . $WC . "\x22\x20\40" . mo_saml_is_customer_license_key_verified(true) . "\x3e\xd\12\11\11\125\x70\x6c\x6f\x61\144\x20\x49\104\x50\x20\115\145\164\x61\144\141\x74\x61\x3c\x2f\141\x3e\74\57\142\x3e\x3c\57\x70\76\15\12\x9\11\74\x70\x20\x73\x74\x79\x6c\145\x3d\x22\164\x65\x78\x74\x2d\141\154\151\147\x6e\72\40\x63\x65\x6e\x74\145\x72\73\x66\157\x6e\x74\x2d\163\151\172\x65\x3a\x20\61\63\160\x74\73\x66\157\x6e\164\x2d\x77\145\151\147\150\x74\x3a\40\142\157\x6c\x64\73\x22\x3e\x4f\x52\x3c\x2f\x70\x3e\xd\xa\11\x9\74\160\40\163\164\x79\154\145\x3d\42\x74\x65\170\x74\x2d\x61\x6c\151\147\x6e\72\40\x63\145\156\164\145\x72\x3b\42\76\x3c\142\x3e\15\12\11\x9\74\141\x20\150\162\x65\146\x3d\42" . $Eh . "\42\x20\x63\x6c\141\x73\163\75\x22\142\x75\x74\164\157\x6e\x20\142\165\164\164\x6f\x6e\x2d\x70\162\151\x6d\141\x72\x79\x20\142\x75\x74\164\157\x6e\x2d\154\x61\162\x67\145\x22\40\40" . mo_saml_is_customer_license_key_verified(true) . "\76\x4d\141\156\x75\x61\154\154\171\x20\x63\x6f\x6e\146\151\x67\165\x72\x65\40\123\120\74\57\141\x3e\x20\74\57\x62\76\74\x2f\x70\76\15\12\x9\x9\x3c\57\144\x69\166\76\15\xa\x9\11\15\12\11\11\74\x2f\164\x64\x3e\xd\12\x9\x9\xd\12\11\x3c\57\164\162\76\15\12\x9\15\12\11\x3c\x74\x72\x3e\xd\xa\11\x9\x3c\164\x64\x3e\15\xa\11\x9\11\x3c\57\142\x72\x3e\x3c\x62\162\76\15\12\x9\x9\x3c\57\x74\x64\76\xd\12\11\x3c\x2f\164\x72\76\15\xa\x9\15\xa\x9\x9\15\xa\11\74\57\x74\x61\142\x6c\x65\x3e\15\xa\11\74\x2f\x64\151\166\x3e\15\xa\x9\15\12\x9\x3c\x62\162\76\xd\12\15\xa\x9\74\144\x69\x76\40\x73\x74\171\154\x65\x3d\x22\x70\157\163\151\164\x69\x6f\x6e\72\x72\x65\154\141\x74\x69\x76\x65\x3b\42\x3e\xd\xa\11\74\x74\x61\142\x6c\x65\40\x77\151\x64\164\x68\x3d\x22\x39\x38\x25\42\x20\142\x6f\x72\x64\145\x72\75\42\x30\x22\x20\163\164\171\x6c\x65\x3d\42\x62\x61\x63\x6b\x67\162\x6f\x75\x6e\144\x2d\x63\x6f\x6c\157\x72\x3a\43\x46\x46\106\x46\x46\106\x3b\x20\x62\x6f\162\144\145\x72\x3a\x31\160\x78\x20\x73\x6f\154\151\144\40\43\x43\x43\103\x43\103\x43\x3b\x20\x70\x61\144\x64\x69\x6e\x67\72\62\45\x3b\x22\76\15\12\x9\x9\74\164\x72\x3e\xd\12\11\x3c\x74\x64\40\143\x6f\154\x73\x70\141\156\x3d\42\62\x22\76\x9\x9\11\xd\xa\x9\11\x3c\x68\x33\76\74\142\x3e\x53\x65\162\x76\x69\143\145\40\x50\162\157\x76\x69\144\145\x72\40\x45\156\144\x70\x6f\x69\156\164\163\72\x3c\x2f\142\76\x3c\57\150\63\76\11\11\15\xa\x9\11\74\146\x6f\162\x6d\40\x77\151\x64\x74\x68\x3d\42\x39\x38\x25\42\x20\x62\x6f\162\144\x65\x72\75\42\60\x22\x20\155\x65\164\x68\x6f\x64\75\42\x70\x6f\163\164\x22\40\151\144\75\42\x6d\157\137\x73\x61\x6d\x6c\x5f\x75\160\144\141\164\x65\137\151\144\x70\x5f\x73\x65\x74\x74\x69\x6e\147\163\x5f\x66\157\162\x6d\x22\x20\141\143\x74\151\157\156\x3d\x22\42\x3e";
+    wp_nonce_field("\155\x6f\x5f\x73\x61\x6d\154\x5f\x75\x70\x64\141\164\145\137\151\x64\160\137\163\x65\x74\164\151\156\x67\x73\x5f\157\160\x74\x69\157\156");
+    echo "\74\x69\156\160\x75\164\x20\164\x79\x70\x65\75\42\x68\x69\144\x64\145\156\x22\40\x6e\x61\x6d\x65\x3d\42\157\x70\164\151\x6f\156\42\x20\x76\141\x6c\x75\x65\75\x22\x6d\157\137\163\141\x6d\154\x5f\165\x70\x64\141\x74\x65\x5f\151\x64\x70\137\163\145\164\x74\x69\156\147\x73\x5f\157\x70\164\x69\157\x6e\x22\40\57\76\xd\xa\x9\x9\11\11\74\164\141\x62\x6c\x65\x20\x77\x69\144\x74\x68\75\x22\x39\70\x25\42\76\15\12\x9\x9\11\x9\11\x3c\x74\x72\76\xd\xa\x9\11\11\11\11\x9\74\x74\x64\40\x77\151\144\164\x68\x3d\x22\62\x30\45\x22\x3e\123\x50\40\102\x61\x73\x65\40\x55\x52\x4c\x3a\x3c\57\x74\144\76\15\12\11\11\x9\x9\11\x9\x3c\164\x64\40\x77\x69\x64\164\150\75\x22\x37\60\x25\x22\x3e\74\151\x6e\160\x75\x74\40\164\x79\160\x65\x3d\x22\x74\x65\170\164\x22\x20\156\x61\155\145\x3d\42\155\157\x5f\163\x61\155\154\137\163\160\137\142\141\x73\x65\x5f\165\x72\154\42\40\x70\x6c\x61\x63\x65\x68\157\154\x64\145\162\75\42\131\157\165\x20\x73\x69\x74\x65\x20\x62\x61\163\145\40\x55\122\114\42\x20\x73\164\171\x6c\145\75\x22\x77\x69\x64\164\150\x3a\40\71\x35\x25\x3b\x22\x20\166\x61\154\x75\145\x3d\42" . $f4 . "\x22\x20\162\x65\x71\165\151\x72\145\144\40" . mo_saml_is_customer_license_key_verified(true) . "\x2f\76\x3c\x2f\x74\x64\x3e\xd\xa\11\11\x9\x9\11\x3c\57\164\x72\76\xd\xa\x9\x9\11\11\11\x3c\x74\162\76\15\xa\11\11\11\x9\11\x9\x3c\164\x64\x3e\123\120\40\105\156\164\x69\164\x79\111\x44\x20\x2f\x20\111\163\163\165\145\162\72\x3c\57\x74\x64\x3e\xd\xa\11\x9\x9\x9\11\11\74\164\144\x3e\74\151\x6e\x70\165\164\x20\x74\171\x70\x65\75\42\x74\145\x78\x74\x22\40\156\x61\155\145\75\42\x6d\157\137\163\x61\x6d\x6c\137\x73\160\x5f\145\156\164\x69\x74\x79\137\x69\144\42\x20\x70\x6c\x61\x63\145\150\x6f\154\x64\x65\162\75\42\x59\x6f\165\x20\163\x69\x74\x65\x20\142\141\x73\x65\40\125\122\x4c\x22\x20\163\164\x79\x6c\145\x3d\42\x77\x69\144\x74\150\72\x20\71\65\45\x3b\x22\40\x76\141\154\x75\145\75\42" . $fK . "\x22\x20\162\145\x71\165\x69\x72\x65\144\40" . mo_saml_is_customer_license_key_verified(true) . "\x2f\76\74\57\164\x64\76\xd\xa\11\11\11\x9\x9\x3c\x2f\x74\162\x3e\15\12\x9\x9\11\11\x9\x9\74\x74\x72\x3e\xd\12\x9\x9\x9\11\x9\11\x9\x3c\x74\144\x3e\xd\xa\11\11\x9\x9\x9\11\11\74\57\164\144\x3e\15\12\11\11\11\11\x9\x9\11\x3c\164\x64\76\15\12\x9\11\11\11\x9\11\11\74\x69\x3e\74\142\x3e\116\157\x74\145\72\74\57\142\76\x20\x49\x66\40\171\x6f\x75\40\150\x61\x76\x65\x20\x61\x6c\162\x65\x61\144\171\x20\163\150\x61\162\x65\144\40\x74\x68\145\40\x61\142\157\x76\145\40\125\122\x4c\x73\40\x6f\162\x20\115\x65\x74\141\x64\141\x74\x61\x20\x77\x69\x74\150\40\x79\x6f\x75\x72\40\111\x64\x50\54\x20\x64\x6f\40\74\x62\x3e\116\x4f\124\x3c\x2f\x62\x3e\x20\x63\x68\141\156\x67\145\40\123\120\40\105\156\164\151\164\x79\111\x44\56\40\x49\x74\x20\155\151\x67\150\x74\x20\x62\162\x65\141\153\x20\x79\x6f\x75\x72\40\145\x78\151\x73\x74\151\x6e\147\40\154\157\x67\151\x6e\x20\x66\154\x6f\x77\x2e\74\x2f\151\x3e\xd\xa\x9\x9\11\x9\11\11\11\x3c\57\164\x64\76\15\12\11\x9\11\x9\11\11\x3c\x2f\164\x72\76\15\xa\x9\11\11\11\11\74\164\162\76\11\11\xd\12\11\x9\x9\11\11\x9\74\x74\144\x20\143\x6f\x6c\x73\160\x61\156\75\x22\62\42\40\163\x74\x79\x6c\145\x3d\42\x74\145\x78\x74\x2d\141\x6c\151\147\x6e\72\40\x63\x65\156\164\145\x72\42\x3e\74\142\x72\x3e\74\x69\156\x70\x75\164\x20\164\171\x70\145\75\x22\x73\165\142\x6d\151\x74\42\x20\156\141\155\x65\x3d\42\x73\x75\x62\155\x69\164\42\40\x73\164\171\154\145\x3d\x22\167\x69\x64\164\150\72\x31\x30\x30\x70\x78\73\42\40\166\x61\x6c\165\145\x3d\x22\125\x70\144\x61\164\145\42\40\143\154\141\x73\x73\x3d\x22\x62\x75\164\x74\x6f\156\40\x62\x75\x74\x74\x6f\x6e\55\x70\x72\x69\155\x61\x72\x79\40\x62\x75\x74\x74\x6f\x6e\55\154\141\162\x67\145\x22\x20" . mo_saml_is_customer_license_key_verified(true) . "\x2f\76\x3c\57\x74\x64\76\15\12\11\11\x9\11\x9\x3c\57\164\162\x3e\15\12\x9\x9\x9\x9\x3c\57\164\141\142\154\x65\x3e\15\12\x9\11\x3c\x2f\146\157\162\x6d\x3e\15\xa\11\x9\x3c\57\x64\x69\166\x3e\xd\12\x9\11\74\57\164\x64\76\xd\12\74\57\x74\x72\x3e\xd\xa\xd\xa\11\15\xa\74\x2f\x74\x61\x62\x6c\x65\x3e\15\xa\x9\x9\xd\12\15\xa\74\142\162\76\15\xa\xd\xa\xd\12\15\12\15\xa\74\163\143\162\151\160\164\x3e\15\12\15\12\15\xa\x20\x76\141\x72\40\160\162\x6f\x67\x72\145\x73\163\137\163\164\145\160\x31\40\75\x20\x64\157\x63\165\x6d\x65\156\x74\56\x67\x65\164\x45\x6c\145\155\145\156\x74\102\x79\111\144\50\x22\160\x72\x6f\x67\162\145\163\163\137\163\164\145\160\61\42\x29\73\15\xa\x20\x20\x76\141\x72\40\x70\162\x6f\147\x72\x65\x73\163\x5f\163\164\145\x70\x32\40\75\40\x64\157\143\x75\x6d\x65\156\164\56\147\145\x74\105\x6c\145\x6d\145\x6e\x74\x42\171\x49\x64\x28\42\x70\x72\157\x67\x72\x65\x73\x73\x5f\x73\164\x65\160\62\42\51\73\xd\xa\xd\12\x76\141\x72\x20\163\x6c\x69\x64\x65\111\156\144\x65\x78\x20\75\x20\61\73\15\xa\163\x68\x6f\x77\123\154\x69\144\x65\x73\50\x73\x6c\151\x64\x65\x49\x6e\144\145\170\x29\x3b\15\12\xd\xa\146\x75\x6e\x63\164\x69\157\x6e\x20\160\154\x75\x73\x53\x6c\x69\144\x65\163\x28\x6e\51\40\x7b\15\xa\x20\40\163\x68\x6f\167\x53\154\151\144\145\x73\x28\163\154\x69\x64\x65\x49\156\x64\145\170\x20\53\75\40\x6e\51\x3b\15\12\x7d\xd\xa\xd\12\146\165\156\143\164\x69\x6f\156\x20\143\x75\x72\162\x65\x6e\x74\123\x6c\x69\x64\x65\50\x6e\x29\x20\173\xd\xa\40\x20\15\xa\40\40\x73\x68\157\167\x53\154\151\144\145\163\50\163\x6c\x69\x64\x65\111\x6e\x64\145\x78\40\75\40\156\x29\73\xd\xa\40\x20\xd\12\x7d\15\xa\15\xa\x66\165\x6e\143\x74\151\x6f\156\x20\143\150\141\x6e\147\145\124\162\141\x63\153\x65\162\146\157\162\123\x74\145\x70\62\50\156\51\40\x7b\xd\12\40\40\x20\x20\40\x70\162\x6f\147\162\x65\163\163\137\x73\x74\145\160\x31\x2e\143\x6c\141\x73\163\x4c\151\163\164\56\162\x65\155\157\x76\x65\50\x22\x69\x73\55\x61\x63\164\x69\x76\145\x22\51\x3b\15\12\x20\40\x20\x20\40\x70\162\157\147\162\x65\x73\163\x5f\163\x74\x65\160\x31\56\x63\x6c\141\x73\x73\x4c\x69\x73\164\x2e\141\144\x64\x28\x22\x69\163\55\x63\157\x6d\x70\x6c\145\164\x65\x22\51\73\15\xa\40\x20\40\x20\40\x70\x72\x6f\x67\162\145\163\x73\137\x73\164\x65\160\x32\56\x63\154\141\163\x73\x4c\x69\x73\164\x2e\x61\144\144\50\42\151\x73\x2d\x61\143\164\x69\166\145\42\x29\x3b\15\12\15\12\40\40\x20\40\40\x63\x75\x72\x72\145\156\x74\x53\x6c\x69\144\145\x28\156\51\73\15\xa\175\xd\xa\xd\xa\x66\165\x6e\x63\164\x69\x6f\x6e\x20\x63\x68\141\156\x67\x65\x54\162\141\x63\x6b\x65\x72\x66\x6f\162\123\x74\x65\x70\x31\50\156\x29\x20\x7b\xd\xa\40\40\x70\162\x6f\x67\x72\145\x73\163\x5f\x73\164\145\160\x32\x2e\143\x6c\141\163\163\x4c\x69\163\x74\56\162\145\x6d\x6f\x76\145\x28\x22\x69\163\x2d\x61\x63\x74\x69\x76\145\42\x29\x3b\15\12\x20\x20\160\x72\x6f\x67\x72\145\x73\163\x5f\x73\x74\145\x70\x31\x2e\x63\154\x61\163\x73\114\x69\x73\x74\x2e\162\x65\x6d\157\x76\x65\50\42\x69\x73\x2d\143\157\x6d\x70\x6c\x65\x74\x65\x22\51\73\xd\xa\40\40\160\162\x6f\x67\x72\x65\x73\163\x5f\163\x74\x65\160\61\56\x63\154\x61\x73\163\x4c\151\x73\164\56\141\144\144\x28\42\151\x73\55\x61\x63\164\x69\166\x65\42\51\73\xd\12\40\40\143\165\162\x72\145\x6e\164\123\154\x69\144\x65\x28\x6e\x29\x3b\15\12\175\xd\12\15\xa\x66\x75\156\143\x74\151\157\x6e\x20\157\160\x61\x63\x69\164\x79\50\51\40\173\xd\xa\40\x20\151\146\x28\163\x6c\151\144\145\111\156\144\145\170\75\75\75\x31\x29\173\15\12\x20\x20\x20\x20\40\40\144\x6f\143\165\155\145\156\164\56\147\145\x74\105\x6c\x65\x6d\x65\156\x74\x42\171\111\144\50\x22\x6d\x6f\137\160\162\145\x76\x22\51\x2e\x73\145\x74\x41\164\164\x72\x69\142\x75\164\145\x28\x22\x73\x74\171\154\145\42\54\42\157\160\141\x63\151\164\x79\72\x30\42\x29\73\15\12\40\x20\40\x20\40\x20\x64\157\143\165\155\x65\x6e\x74\56\x67\145\x74\x45\x6c\x65\155\145\156\164\102\171\111\144\50\42\155\x6f\137\156\x65\x78\164\42\x29\x2e\163\145\164\101\x74\164\162\151\142\165\164\x65\x28\42\x73\164\x79\x6c\145\42\x2c\42\x6f\160\x61\143\x69\x74\171\x3a\61\56\60\65\x22\51\x3b\xd\xa\xd\xa\11\175\xd\12\x20\x20\x65\154\x73\145\40\x69\146\50\x73\154\151\144\145\111\x6e\x64\x65\170\75\75\x3d\62\x29\40\x7b\x20\40\40\x20\40\x20\xd\xa\40\x20\x20\40\40\40\144\157\143\x75\x6d\145\x6e\x74\56\147\145\164\x45\x6c\145\155\x65\156\x74\x42\171\x49\144\50\42\155\x6f\x5f\160\162\145\x76\42\51\56\163\x65\164\x41\164\x74\x72\x69\142\165\x74\x65\50\x22\163\x74\171\154\145\42\x2c\42\x6f\x70\x61\x63\x69\164\171\x3a\x31\56\x30\65\x22\51\x3b\15\xa\x20\x20\x20\x20\40\40\144\x6f\143\165\155\145\156\x74\56\x67\x65\x74\105\154\145\x6d\x65\156\164\102\171\111\144\50\x22\x6d\157\x5f\156\145\x78\164\42\x29\x2e\163\x65\x74\x41\x74\164\162\x69\142\x75\164\145\x28\x22\163\164\x79\x6c\145\42\x2c\x22\x6f\x70\141\143\x69\x74\x79\x3a\60\42\x29\x3b\175\15\12\11\40\x20\x20\40\x20\40\15\12\175\15\12\40\x20\15\12\xd\xa\x66\165\156\x63\x74\x69\157\156\x20\x73\150\x6f\x77\123\x6c\x69\144\x65\x73\50\156\51\40\173\xd\12\x20\40\x76\141\162\x20\151\x3b\15\xa\40\40\157\x70\x61\143\x69\x74\x79\x28\x29\x3b\xd\xa\40\x20\x76\141\162\x20\x73\x6c\x69\144\x65\x73\x20\x3d\40\144\157\x63\165\x6d\145\x6e\164\x2e\147\145\164\x45\154\145\x6d\145\x6e\x74\163\102\171\x43\x6c\x61\x73\x73\116\x61\155\145\x28\42\155\171\x53\154\151\144\x65\x73\x22\x29\73\15\12\x20\40\x69\x66\40\x28\x6e\x20\x3e\40\163\x6c\x69\144\145\x73\x2e\154\x65\156\147\164\150\x29\x20\x7b\163\x6c\151\x64\x65\x49\156\144\145\x78\40\75\x20\61\x7d\40\x20\x20\x20\15\12\x20\40\x69\x66\x20\50\156\40\74\x20\x31\x29\x20\173\163\154\x69\x64\x65\x49\x6e\x64\x65\170\x20\75\x20\163\154\x69\x64\x65\x73\56\x6c\145\156\x67\164\150\175\xd\12\x20\40\x66\157\162\40\50\x69\40\x3d\40\x30\73\x20\x69\40\74\x20\x73\154\151\144\145\163\x2e\x6c\145\156\x67\164\150\73\x20\151\x2b\53\51\40\x7b\15\xa\x20\x20\40\40\40\40\x73\154\x69\x64\145\163\133\151\135\56\x73\164\x79\154\145\x2e\x64\151\163\160\x6c\x61\171\x20\x3d\40\x22\x6e\x6f\x6e\x65\x22\x3b\40\x20\15\xa\x20\x20\175\15\xa\40\x20\xd\12\40\x20\163\154\x69\144\145\x73\133\x73\x6c\x69\144\145\x49\x6e\x64\145\170\x2d\61\135\56\163\164\171\x6c\x65\x2e\144\151\x73\x70\x6c\141\x79\40\75\x20\42\142\x6c\157\x63\x6b\42\x3b\x20\x20\15\12\x7d\15\12\15\12\x66\x75\x6e\143\164\151\157\156\40\x63\x6f\x70\171\x54\157\x43\x6c\151\x70\142\157\x61\162\x64\x28\x63\157\x70\x79\102\165\x74\x74\157\x6e\x2c\40\x65\154\145\x6d\145\x6e\x74\54\40\143\x6f\160\x79\x65\x6c\145\x6d\145\x6e\164\x29\x20\x7b\15\xa\x9\x76\141\x72\x20\x74\x65\x6d\160\x20\x3d\40\x6a\x51\165\x65\x72\x79\x28\42\x3c\151\x6e\x70\165\164\76\42\51\73\xd\12\11\x6a\121\x75\145\162\x79\x28\x22\x62\x6f\144\x79\42\x29\x2e\x61\x70\x70\x65\x6e\144\x28\x74\x65\x6d\x70\x29\73\xd\xa\x9\164\x65\155\160\x2e\x76\141\x6c\x28\x6a\121\x75\x65\x72\x79\x28\x65\154\145\x6d\x65\x6e\164\x29\x2e\x74\x65\x78\164\x28\x29\51\x2e\x73\x65\154\145\x63\164\x28\x29\73\15\xa\11\144\x6f\x63\165\155\x65\156\164\56\x65\170\145\143\103\x6f\x6d\x6d\141\156\x64\x28\42\143\157\160\171\42\x29\x3b\15\xa\x9\164\145\x6d\x70\x2e\x72\x65\x6d\157\166\145\x28\x29\73\15\12\x9\x6a\121\165\145\x72\x79\x28\x63\x6f\x70\x79\145\154\145\x6d\145\x6e\x74\x29\56\x74\x65\x78\164\50\x22\103\157\x70\x69\145\x64\x22\x29\73\15\12\xd\xa\x9\152\x51\165\x65\x72\x79\50\143\x6f\x70\171\x42\x75\164\164\x6f\156\x29\x2e\155\x6f\x75\163\x65\x6f\x75\x74\x28\x66\165\156\x63\x74\151\157\156\50\x29\x7b\xd\12\x9\11\x6a\121\165\145\x72\171\x28\143\157\x70\171\x65\x6c\x65\155\x65\156\164\x29\x2e\x74\x65\170\x74\x28\42\x43\x6f\160\x79\x20\164\157\40\103\154\151\160\142\x6f\141\x72\x64\x22\51\x3b\15\12\11\175\x29\x3b\xd\xa\40\x20\x7d\15\xa\15\xa\15\xa\x6a\x51\x75\x65\x72\171\50\42\43\x69\x64\x70\147\x75\151\x64\145\x22\51\56\157\156\x28\42\143\150\141\x6e\x67\x65\42\x2c\40\146\165\156\143\x74\x69\157\156\50\x29\x20\173\xd\12\x9\11\x9\x9\11\166\x61\162\x20\x73\x65\x6c\x65\143\x74\145\144\x49\x64\x70\x20\75\x20\x20\x6a\121\x75\x65\x72\x79\x28\164\x68\x69\163\51\56\146\151\156\144\50\x22\157\160\164\x69\x6f\156\x3a\x73\x65\154\x65\x63\x74\x65\144\42\51\x2e\x76\141\x6c\x28\51\73\15\xa\xd\xa\11\x9\x9\x9\x9\11\152\121\x75\x65\162\x79\x28\42\x23\x69\x64\160\163\145\x74\x75\160\154\151\x6e\x6b\x22\51\x2e\x63\x73\x73\x28\42\x64\x69\163\x70\154\x61\x79\x22\x2c\42\151\x6e\x6c\151\x6e\x65\x22\51\x3b\xd\xa\x9\x9\x9\11\x9\x9\163\145\x6c\145\143\x74\x65\x64\111\144\160\40\x3d\x20\x73\145\x6c\x65\143\x74\x65\144\111\x64\x70\x20\x2b\40\x22\x5f\141\163\x5f\x69\x64\x70\56\160\144\146\42\x3b\15\12\x9\x9\x9\x9\x9\11\163\145\154\145\x63\164\145\x64\x49\144\160\x20\75\x20\42" . plugins_url("\162\x65\163\157\165\x72\143\x65\x73\x2f\x69\x64\x70\x2d\163\145\164\x75\x70\55\147\165\x69\144\x65\x73\x2f", __FILE__) . "\42\x20\x2b\x20\163\145\154\145\x63\164\145\144\111\144\160\73\15\xa\11\11\x9\x9\x9\11\x6a\x51\165\145\x72\171\50\x22\x23\151\144\x70\x73\145\164\165\160\x6c\151\x6e\x6b\x22\x29\x2e\141\x74\x74\x72\x28\x22\x68\162\145\146\x22\54\x73\145\154\145\143\164\x65\144\x49\x64\160\51\73\15\12\xd\xa\x9\x9\x9\x9\x7d\51\x3b\xd\12\74\57\x73\x63\x72\x69\160\x74\x3e\15\xa\x9\x9\15\12\15\12\xd\xa";
 }
-
+function mo_saml_download()
+{
+    if (!(array_key_exists("\157\x70\x74\x69\157\x6e", $_POST) && $_POST["\x6f\x70\x74\x69\157\x6e"] == "\155\x6f\x5f\163\141\155\154\x5f\x64\x6f\167\x6e\x6c\157\141\144\x5f\x63\x65\x72\164" && check_admin_referer("\x6d\x6f\x5f\163\x61\155\154\x5f\144\157\167\x6e\154\157\x61\144\137\x63\x65\162\x74"))) {
+        goto oT;
+    }
+    $NE = get_option("\155\x6f\137\x73\x61\155\x6c\137\x63\x75\162\162\145\156\x74\137\143\145\162\x74");
+    header("\103\157\x6e\x74\x65\156\x74\x2d\124\171\160\x65\72\x20\x61\160\160\x6c\151\143\141\x74\151\157\x6e\57\143\x72\x74");
+    header("\x43\x6f\x6e\164\x65\x6e\x74\55\104\151\163\160\x6f\x73\151\x74\151\x6f\156\x3a\40\x61\164\x74\141\x63\150\155\x65\156\164\x3b\x20\x66\151\154\x65\156\x61\x6d\x65\x3d\42\163\160\x2d\x63\x65\162\x74\x69\146\x69\x63\x61\x74\145\56\143\162\164\x22");
+    echo $NE;
+    die;
+    oT:
+    if (!(array_key_exists("\x6f\x70\x74\x69\x6f\x6e", $_POST) && $_POST["\x6f\x70\x74\151\x6f\x6e"] == "\155\x6f\x5f\x73\x61\155\x6c\x5f\x64\x6f\x77\x6e\x6c\x6f\141\x64\137\156\145\x77\137\143\145\x72\164" && check_admin_referer("\155\x6f\137\x73\141\x6d\154\x5f\144\157\x77\156\x6c\x6f\141\144\x5f\156\x65\167\x5f\x63\x65\x72\164"))) {
+        goto oW;
+    }
+    $l3 = file_get_contents(plugin_dir_path(__DIR__) . "\x72\x65\163\x6f\165\x72\x63\x65\x73" . DIRECTORY_SEPARATOR . "\155\x69\x6e\151\x6f\x72\141\x6e\147\x65\x5f\163\160\137\62\60\x32\60\56\x63\x72\x74");
+    header("\x43\157\156\164\x65\x6e\x74\x2d\124\x79\x70\x65\x3a\x20\141\160\160\154\x69\x63\141\164\x69\157\x6e\57\143\x72\x74");
+    header("\103\x6f\156\164\x65\x6e\x74\x2d\x44\x69\163\160\x6f\x73\151\164\x69\157\x6e\x3a\40\x61\x74\x74\x61\143\x68\155\145\156\x74\73\40\146\151\154\x65\156\141\155\145\75\42\155\x69\156\151\x6f\162\141\156\x67\145\137\x73\160\x5f\x32\60\62\60\x2e\143\x72\x74\42");
+    echo $l3;
+    die;
+    oW:
+    if (!(array_key_exists("\157\160\164\x69\157\x6e", $_POST) && $_POST["\157\160\x74\151\157\156"] == "\x6d\157\x5f\x73\141\x6d\x6c\137\144\157\167\x6e\x6c\157\141\x64\x5f\155\145\x74\141\x64\x61\164\141" && check_admin_referer("\155\x6f\137\163\141\155\154\137\x64\157\167\x6e\154\157\x61\144\137\x6d\x65\x74\x61\144\141\164\141"))) {
+        goto Xx;
+    }
+    miniorange_generate_metadata(true);
+    Xx:
+    if (!(array_key_exists("\x6f\x70\164\x69\x6f\156", $_POST) && $_POST["\157\x70\164\x69\157\x6e"] == "\x6d\157\x5f\x73\x61\155\x6c\x5f\x64\x6f\x77\156\x6c\x6f\141\144\x5f\x6e\145\167\137\155\145\x74\141\x64\x61\x74\141" && check_admin_referer("\x6d\157\x5f\163\141\155\x6c\x5f\x64\157\x77\156\x6c\157\x61\144\x5f\156\x65\167\x5f\x6d\145\x74\x61\144\x61\164\141"))) {
+        goto N4;
+    }
+    miniorange_generate_metadata(true, true);
+    N4:
+}

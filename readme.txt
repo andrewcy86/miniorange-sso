@@ -2,10 +2,9 @@
 Contributors: miniOrange
 Donate link: http://miniorange.com
 Tags: saml, single sign on, SSO, single sign on saml, sso saml, sso integration WordPress, sso using SAML, SAML 2.0 Service Provider, Wordpress SAML, SAML Single Sign-On, SSO using SAML, SAML 2.0, SAML 20, Wordpress Single Sign On, ADFS, Okta, Google Apps, Google for Work, Salesforce, Shibboleth, SimpleSAMLphp, OpenAM, Centrify, Ping, RSA, IBM, Oracle, OneLogin, Bitium, WSO2, NetIQ, Novell Access Manager
-Requires at least: 3.5
+Requires at least: 3.7
 Tested up to: 5.5.1
-Stable tag: 12.0.2
-Requires PHP: 5.4
+Stable tag: 16.0.3
 License URI: http://miniorange.com/usecases/miniOrange_User_Agreement.pdf
 
 miniOrange SAML 2.0 Single Sign-On provides SSO to your Wordpress site with any SAML compliant Identity Provider. (ACTIVE SUPPORT for IdP config)
@@ -64,50 +63,52 @@ Visit Help & FAQ section in the plugin OR email us at info@xecurify.com or <a hr
 
 == Changelog ==
 
-= 12.0.2 =
-Fixed IdP-initiated SLO
-Vulnerability fixes
-Fixed attribute display issue on Users menu
-Fixed email update issue for existing users
-Compatibility with WordPress 5.5.1
-Fixed compatibility issue with PHP 5.4
+= 16.0.3 =
+Compatible with PHP 8.0
+Compatible with WordPress 5.7
+Vulnerability patch: SAML Replay attack
+Fixed Redirection for URLs containing special characters
+Updated UI
+
+= 16.0.2 =
+Compatible with WordPress 5.5.1
 Added new certificates
-Fixed keycloak metadata upload issue
-
-= 12.0.1 =
-Added Logout Relay State feature
-Updated SAML-compliant IdP guides
-Bug fixes in Single Logout and Role mapping
-Compatibility with PHP 7.4
-
-= 12.0.0 =
-Upgrade Framework
-Compatibility with PHP 7.2
-Compatibility with WordPress 5.3
-
-= 11.4.3 =
+Fixed empty NameID Format issue during auto-redirection.
 Vulnerability fixes
+Added support for user_register hook
 
-= 11.4.2 =
-UI fixes.
-Added Customizable SSO button.
-Added Domain Restriction feature.
+= 16.0.1 =
+Compatible with PHP 7.4
+Updated SAML-compliant IdP guides
+Bug fixes
+
+= 16.0.0 =
+Upgrade Framework
+Compatible with PHP 7.2
+Compatible with WordPress 5.3
+
+= 15.9.91 =
+Added nonces and minor security fixes.
+License verification bug fix.
+Minor UI fixes.
+
+= 15.9.9 =
+UI and usability fixes.
+Fixed 500 error code during login.
+Added Encryption algorithm aes-128-gcm
+Updated xmlseclibs library.
 Send plugin configuration with support query.
 Custom Widget and shortcode Text.
+Export Plugin Configurations.
 Added Keep Configuration intact feature.
-Compatibility with WordPress 5.2.2.
+Custom Backdoor URL.
+Removed Single Logout.
+Removed Proxy Setup tab.
 
-= 11.4.1 =
-UI fixes.
-Updated XMLSeclibs library.
-Custom widget texts.
-Custom error messages.
-Compatibility with Wordpress 5.0.2.
+= 15.1.1 =
+new upgrade plans and changes in check license api
 
-= 11.4.0 =
-Compatibility with WordPress 4.9.6
-
-= 11.3.0 =
+= 15.1.0 =
 Removed mcrypt dependencies.
 Support for Wordpress 4.9.1
 
@@ -175,48 +176,52 @@ UI Improvements.
 
 == Upgrade Notice ==
 
-= 12.0.2 =
-Fixed IdP-initiated SLO
-Vulnerability fixes
-Fixed attribute display issue on Users menu
-Compatibility with WordPress 5.4.1
-Fixed compatibility issue with PHP 5.4
+= 16.0.3 =
+Compatible with PHP 8.0
+Compatible with WordPress 5.7
+Vulnerability patch: SAML Replay attack
+Fixed Redirection for URLs containing special characters
+Updated UI
 
-= 12.0.1 =
-Added Logout Relay State feature
+= 16.0.2 =
+Compatible with WordPress 5.5.1
+Added new certificates
+Fixed empty NameID Format issue during auto-redirection.
+Vulnerability fixes
+Added support for user_register hook
+
+= 16.0.1 =
+Compatible with PHP 7.4
 Updated SAML-compliant IdP guides
-Bug fixes in Single Logout and Role mapping
-Compatibility with PHP 7.4
+Bug fixes
 
-= 12.0.0 =
+= 16.0.0 =
 Upgrade Framework
-Compatibility with PHP 7.2
-Compatibility with WordPress 5.3
+Compatible with PHP 7.2
+Compatible with WordPress 5.3
 
-= 11.4.3 =
-Vulnerability fixes
+= 15.9.91 =
+Added nonces and minor security fixes.
+License verification bug fix.
+Minor UI fixes.
 
-= 11.4.2 =
-UI fixes.
-Added Customizable SSO button.
-Added Domain Restriction feature.
+= 15.9.9 =
+UI and usability fixes.
+Fixed 500 error code during login.
+Added Encryption algorithm aes-128-gcm
+Updated xmlseclibs library.
 Send plugin configuration with support query.
 Custom Widget and shortcode Text.
+Export Plugin Configurations.
 Added Keep Configuration intact feature.
-Compatibility with WordPress 5.2.2.
+Custom Backdoor URL.
+Removed Single Logout.
+Removed Proxy Setup tab.
 
-= 11.4.1 =
-UI fixes.
-Updated XMLSeclibs library.
-Custom widget texts.
-Custom error messages.
-Compatibility with Wordpress 5.0.2.
+= 15.1.1 =
+new upgrade plans and changes in check license api
 
-= 11.4.0 =
-Compatibility with WordPress 4.9.6
-
-= 11.3.0 =
-
+= 15.1.0 =
 Removed mcrypt dependencies.
 Support for Wordpress 4.9.1
 

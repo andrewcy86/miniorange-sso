@@ -1,54 +1,21 @@
 <?php
-require_once '../../../wp-load.php';
-$sp_base_url = get_option('mo_saml_sp_base_url');
-if(empty($sp_base_url)) {
-	$sp_base_url = home_url();
+
+
+require_once "\x2e\56\57\x2e\56\57\56\x2e\57\x77\x70\x2d\154\x6f\x61\x64\56\x70\x68\160";
+$f4 = get_option("\155\157\137\163\x61\155\x6c\137\x73\x70\x5f\142\141\x73\145\x5f\165\162\x6c");
+if (!empty($f4)) {
+    goto Lm;
 }
-$entity_id = get_option('mo_saml_sp_entity_id');
-if(empty($entity_id)) {
-	$entity_id = $sp_base_url.'/wp-content/plugins/miniorange-saml-20-single-sign-on/';
+$f4 = home_url();
+Lm:
+$of = get_option("\155\157\137\x73\141\155\x6c\x5f\x73\x70\x5f\x65\156\164\151\x74\x79\x5f\151\x64");
+if (!empty($of)) {
+    goto W0;
 }
-//$entity_id = $sp_base_url . '/wp-content/plugins/miniorange-saml-20-single-sign-on/';
-$acs_url = $sp_base_url . '/';
-$certificate = get_option( 'mo_saml_current_cert' );
-$certificate = SAMLSPUtilities::desanitize_certificate($certificate);
-//ob_clean();
-header('Content-Type: text/xml');
-echo '<?xml version="1.0"?>
-<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" validUntil="2020-10-28T23:59:59Z" cacheDuration="PT1446808792S" entityID="' . $entity_id . '">
-  <md:SPSSODescriptor AuthnRequestsSigned="true" WantAssertionsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
-    <md:KeyDescriptor use="signing">
-      <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
-        <ds:X509Data>
-          <ds:X509Certificate>' . $certificate . '</ds:X509Certificate>
-        </ds:X509Data>
-      </ds:KeyInfo>
-    </md:KeyDescriptor>
-    <md:KeyDescriptor use="encryption">
-      <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
-        <ds:X509Data>
-          <ds:X509Certificate>' . $certificate . '</ds:X509Certificate>
-        </ds:X509Data>
-      </ds:KeyInfo>
-    </md:KeyDescriptor>
-	<md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="' . $acs_url . '"/>
-    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="' . $acs_url . '"/>
-    <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</md:NameIDFormat>
-	<md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</md:NameIDFormat>
-	<md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</md:NameIDFormat>
-    <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="' . $acs_url . '" index="1"/>
-  </md:SPSSODescriptor>
-  <md:Organization>
-    <md:OrganizationName xml:lang="en-US">miniOrange</md:OrganizationName>
-    <md:OrganizationDisplayName xml:lang="en-US">miniOrange</md:OrganizationDisplayName>
-    <md:OrganizationURL xml:lang="en-US">http://miniorange.com</md:OrganizationURL>
-  </md:Organization>
-  <md:ContactPerson contactType="technical">
-    <md:GivenName>miniOrange</md:GivenName>
-    <md:EmailAddress>info@xecurify.com</md:EmailAddress>
-  </md:ContactPerson>
-  <md:ContactPerson contactType="support">
-    <md:GivenName>miniOrange</md:GivenName>
-    <md:EmailAddress>info@xecurify.com</md:EmailAddress>
-  </md:ContactPerson>
-</md:EntityDescriptor>';
+$of = $f4 . "\57\x77\x70\x2d\143\x6f\156\164\x65\x6e\164\x2f\160\x6c\x75\147\x69\x6e\x73\57\155\151\156\151\157\162\x61\x6e\147\x65\x2d\163\x61\155\x6c\55\62\x30\x2d\x73\x69\x6e\147\154\145\55\163\151\x67\156\x2d\157\156\57";
+W0:
+$PU = $f4 . "\x2f";
+$Vm = get_option("\155\157\137\163\x61\155\154\137\143\165\x72\x72\145\x6e\x74\x5f\x63\145\162\x74");
+$Vm = SAMLSPUtilities::desanitize_certificate($Vm);
+header("\103\157\x6e\164\x65\156\164\55\x54\171\x70\145\72\x20\x74\145\x78\164\x2f\170\155\154");
+echo "\74\77\x78\x6d\154\x20\x76\x65\162\x73\151\157\x6e\75\x22\61\56\x30\42\x3f\x3e\15\xa\x3c\155\x64\72\105\x6e\x74\x69\x74\x79\x44\145\163\x63\x72\151\x70\164\157\x72\40\170\x6d\x6c\x6e\163\x3a\x6d\x64\75\42\x75\162\156\72\157\x61\x73\x69\x73\72\156\x61\155\145\163\72\x74\143\x3a\x53\x41\x4d\x4c\x3a\62\56\60\x3a\x6d\x65\x74\141\x64\x61\x74\x61\42\40\x76\x61\154\151\x64\125\x6e\164\x69\154\x3d\x22\x32\x30\62\60\55\x31\x30\x2d\62\x38\x54\x32\63\72\x35\71\x3a\65\71\132\42\40\143\141\x63\150\x65\104\165\162\x61\x74\x69\157\156\x3d\x22\120\124\61\x34\64\66\x38\x30\70\x37\71\x32\123\x22\x20\x65\x6e\x74\151\x74\171\111\104\x3d\x22" . $of . "\42\x3e\15\xa\40\40\x3c\x6d\x64\x3a\123\120\123\x53\x4f\104\x65\163\x63\x72\151\160\x74\157\x72\x20\101\165\164\x68\x6e\x52\145\161\165\145\163\x74\163\x53\151\x67\156\145\x64\75\42\164\162\x75\x65\42\40\127\141\x6e\164\x41\x73\163\145\x72\164\151\157\156\163\123\151\x67\x6e\x65\x64\x3d\x22\164\x72\x75\x65\x22\x20\160\162\x6f\164\x6f\x63\x6f\154\x53\165\160\160\157\162\x74\x45\156\165\x6d\x65\x72\x61\164\x69\x6f\x6e\x3d\42\165\162\156\x3a\x6f\141\x73\x69\163\72\x6e\x61\x6d\x65\163\x3a\164\x63\x3a\x53\x41\x4d\114\72\62\56\x30\x3a\160\x72\157\x74\157\143\157\x6c\x22\x3e\15\12\x20\40\40\40\x3c\x6d\x64\x3a\113\x65\171\x44\145\163\x63\162\151\160\164\157\162\x20\165\163\145\x3d\x22\163\x69\147\x6e\x69\x6e\x67\42\x3e\15\xa\x20\40\40\40\40\40\74\144\163\x3a\x4b\x65\x79\x49\x6e\x66\x6f\40\170\155\x6c\x6e\x73\x3a\144\163\x3d\42\150\x74\x74\160\72\57\x2f\x77\167\167\56\x77\x33\x2e\157\x72\x67\57\62\60\60\x30\57\x30\71\x2f\170\155\154\144\x73\x69\x67\x23\42\x3e\15\xa\40\x20\x20\40\40\x20\40\x20\x3c\x64\163\x3a\130\65\x30\x39\104\x61\164\x61\x3e\xd\12\x20\x20\x20\40\x20\x20\40\40\x20\40\74\x64\x73\x3a\x58\65\x30\71\103\145\162\164\x69\x66\151\x63\x61\164\x65\76" . $Vm . "\74\57\144\163\x3a\130\x35\60\x39\x43\x65\x72\x74\x69\x66\x69\143\141\x74\145\x3e\xd\12\x20\40\x20\40\x20\40\x20\40\x3c\x2f\x64\x73\x3a\130\x35\x30\71\x44\141\164\141\x3e\15\12\x20\40\x20\40\x20\40\74\57\x64\163\72\x4b\145\x79\x49\x6e\146\157\x3e\xd\xa\40\x20\x20\x20\x3c\x2f\x6d\x64\72\113\x65\171\104\145\163\143\x72\151\x70\164\157\162\x3e\xd\xa\40\x20\40\40\74\155\144\x3a\x4b\145\171\x44\x65\x73\x63\x72\x69\160\x74\x6f\162\x20\x75\163\x65\x3d\42\x65\x6e\x63\x72\x79\160\164\151\x6f\156\42\x3e\xd\xa\40\x20\x20\40\x20\x20\x3c\x64\163\72\x4b\x65\171\x49\156\x66\x6f\x20\x78\x6d\x6c\x6e\x73\x3a\x64\x73\x3d\x22\150\164\x74\x70\72\x2f\x2f\167\x77\167\x2e\167\x33\x2e\x6f\x72\x67\x2f\x32\x30\x30\60\57\60\71\x2f\x78\x6d\x6c\x64\x73\151\x67\x23\x22\76\xd\12\x20\x20\x20\x20\x20\x20\x20\40\74\x64\163\72\x58\x35\x30\x39\104\141\164\141\x3e\15\xa\x20\x20\40\x20\x20\40\40\x20\x20\x20\74\x64\x73\x3a\x58\65\x30\71\103\145\x72\x74\x69\x66\151\143\141\x74\145\76" . $Vm . "\x3c\x2f\144\x73\72\130\x35\60\71\103\145\162\164\x69\x66\x69\143\x61\x74\145\x3e\15\12\x20\40\40\x20\x20\x20\40\40\74\x2f\x64\x73\x3a\x58\x35\60\x39\104\x61\x74\x61\76\xd\xa\x20\x20\x20\40\x20\40\74\x2f\x64\163\72\113\145\x79\x49\x6e\146\x6f\x3e\15\12\40\x20\40\x20\74\x2f\155\144\x3a\x4b\x65\171\x44\145\163\143\x72\x69\x70\164\x6f\162\x3e\15\xa\x20\40\x20\40\74\x6d\x64\72\116\141\x6d\x65\x49\x44\x46\x6f\x72\155\x61\164\x3e\165\x72\156\72\157\x61\163\x69\x73\x3a\156\x61\x6d\145\163\x3a\164\143\x3a\123\x41\x4d\x4c\x3a\x31\56\x31\x3a\156\141\x6d\x65\151\x64\55\x66\157\x72\x6d\x61\164\x3a\145\155\x61\x69\154\101\x64\144\162\145\x73\x73\74\x2f\x6d\x64\72\116\x61\155\x65\111\104\106\x6f\162\155\141\164\76\15\12\x9\74\155\x64\x3a\x4e\141\x6d\145\111\x44\106\x6f\x72\x6d\141\x74\76\165\162\x6e\72\x6f\x61\163\151\163\x3a\x6e\141\155\145\163\72\x74\x63\72\x53\101\115\x4c\x3a\62\x2e\60\72\x6e\x61\155\145\151\x64\55\146\x6f\x72\x6d\x61\x74\72\160\x65\162\x73\151\x73\164\145\x6e\x74\x3c\57\155\144\x3a\x4e\x61\x6d\145\x49\104\x46\x6f\162\155\141\164\x3e\xd\12\11\74\155\144\x3a\x4e\141\155\145\111\x44\x46\x6f\162\x6d\x61\164\76\x75\162\156\x3a\x6f\x61\163\x69\163\x3a\156\141\x6d\145\x73\72\164\x63\x3a\123\x41\x4d\x4c\x3a\x32\x2e\60\72\x6e\x61\x6d\145\151\144\55\x66\157\x72\155\141\x74\x3a\x74\162\141\156\x73\x69\145\156\x74\74\57\x6d\144\72\116\141\x6d\x65\x49\104\x46\x6f\x72\155\x61\x74\76\15\xa\x20\40\40\x20\74\155\x64\72\x41\x73\163\145\162\x74\151\x6f\156\103\157\156\163\x75\x6d\x65\x72\123\145\162\166\151\x63\145\40\102\151\156\144\151\x6e\147\x3d\42\x75\x72\156\x3a\157\x61\163\x69\x73\x3a\x6e\141\x6d\x65\163\72\164\143\x3a\x53\101\x4d\114\x3a\62\x2e\60\x3a\142\151\156\x64\x69\x6e\147\163\x3a\x48\x54\x54\x50\x2d\x50\x4f\x53\x54\42\40\114\157\x63\141\164\x69\x6f\x6e\x3d\42" . $PU . "\42\40\151\x6e\x64\x65\x78\x3d\42\x31\x22\57\x3e\15\xa\40\x20\x3c\57\x6d\x64\x3a\123\x50\123\123\x4f\104\x65\163\143\x72\151\x70\164\157\x72\x3e\15\12\x20\40\x3c\155\x64\x3a\117\x72\x67\x61\x6e\151\x7a\x61\x74\x69\x6f\x6e\76\15\12\40\x20\40\40\74\155\x64\72\117\162\147\x61\156\151\x7a\x61\164\151\157\x6e\116\x61\x6d\145\x20\170\155\x6c\x3a\x6c\141\x6e\147\x3d\42\145\156\55\125\x53\42\76\155\x69\156\151\117\162\x61\x6e\147\x65\74\x2f\155\x64\x3a\117\x72\147\x61\x6e\151\x7a\141\x74\x69\157\156\116\x61\x6d\145\76\xd\12\x20\40\40\40\74\x6d\144\72\117\x72\x67\141\156\x69\172\141\x74\x69\x6f\156\x44\151\x73\x70\x6c\x61\x79\x4e\141\x6d\145\40\170\x6d\x6c\72\x6c\x61\156\147\75\42\145\x6e\55\125\x53\x22\x3e\x6d\151\x6e\151\x4f\x72\141\x6e\147\x65\74\57\x6d\x64\x3a\x4f\162\147\141\x6e\151\172\141\x74\151\157\156\104\x69\163\160\154\x61\x79\116\x61\155\x65\76\xd\xa\x20\x20\x20\40\74\x6d\x64\x3a\x4f\x72\147\141\156\151\x7a\141\x74\x69\x6f\x6e\x55\x52\x4c\x20\x78\x6d\154\72\154\x61\156\147\x3d\42\145\156\55\x55\x53\x22\x3e\x68\164\164\160\72\57\57\155\151\156\151\x6f\162\141\156\147\x65\x2e\x63\x6f\155\74\x2f\x6d\144\x3a\x4f\x72\x67\x61\x6e\151\x7a\x61\x74\x69\x6f\x6e\x55\122\114\76\15\12\x20\x20\74\x2f\x6d\144\x3a\x4f\x72\x67\x61\x6e\151\x7a\x61\x74\151\157\x6e\x3e\15\xa\x20\40\74\x6d\144\x3a\103\157\x6e\x74\141\x63\164\120\x65\162\163\157\x6e\x20\x63\x6f\156\164\141\x63\x74\x54\171\x70\x65\75\x22\164\x65\x63\150\156\x69\x63\x61\154\42\76\xd\12\40\40\x20\40\x3c\155\x64\72\107\x69\x76\145\x6e\116\141\155\x65\76\155\151\x6e\x69\x4f\x72\141\x6e\147\145\x3c\57\x6d\144\72\107\151\x76\x65\156\116\141\155\x65\76\xd\12\40\x20\40\x20\x3c\x6d\x64\x3a\x45\155\x61\151\154\x41\144\x64\x72\x65\163\x73\x3e\151\156\146\x6f\100\170\145\x63\x75\162\151\146\171\56\x63\157\155\x3c\57\155\x64\x3a\x45\155\141\x69\x6c\101\x64\x64\x72\x65\x73\x73\76\xd\xa\x20\x20\x3c\x2f\x6d\144\72\x43\157\156\x74\x61\x63\164\120\145\162\x73\157\x6e\76\15\xa\x20\x20\x3c\x6d\144\72\103\157\156\x74\x61\x63\x74\120\145\162\163\x6f\x6e\40\143\x6f\x6e\x74\x61\x63\164\x54\171\160\145\75\42\x73\x75\x70\x70\157\162\x74\x22\76\xd\xa\40\40\40\x20\74\155\x64\72\x47\151\x76\145\x6e\116\x61\x6d\x65\x3e\x6d\x69\x6e\151\117\x72\141\156\147\145\74\57\155\x64\72\x47\151\x76\145\x6e\x4e\x61\x6d\145\x3e\15\12\40\x20\x20\x20\74\x6d\x64\x3a\105\155\141\x69\154\101\144\144\162\145\163\163\76\151\x6e\146\157\x40\x78\x65\x63\x75\162\151\146\x79\x2e\143\x6f\x6d\x3c\x2f\x6d\x64\x3a\x45\x6d\141\151\x6c\101\x64\144\x72\x65\x73\x73\x3e\xd\12\40\x20\x3c\57\155\144\72\x43\157\156\x74\x61\143\164\120\x65\x72\163\x6f\156\76\15\xa\74\57\x6d\144\x3a\105\156\164\151\x74\171\x44\145\163\143\x72\x69\x70\x74\x6f\x72\76";

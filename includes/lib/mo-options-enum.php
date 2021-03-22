@@ -1,179 +1,97 @@
 <?php
-include "BasicEnum.php";
- class mo_options_enum_sso_login extends BasicEnum {
-	const Relay_state = 'mo_saml_relay_state';
-	const Logout_Relay_state = 'mo_saml_logout_relay_state';
-	const Redirect_Idp = 'mo_saml_registered_only_access';
-	const Force_authentication = 'mo_saml_force_authentication';
-	const Enable_access_RSS = 'mo_saml_enable_rss_access';
-	const Auto_redirect = 'mo_saml_enable_login_redirect';
-	const Allow_wp_signin = 'mo_saml_allow_wp_signin';
-	const Backdoor_URL = "mo_saml_backdoor_url";
-	const Custom_login_button = 'mo_saml_custom_login_text';
-	const Custom_greeting_text = 'mo_saml_custom_greeting_text';
-	const Custom_greeting_name = 'mo_saml_greeting_name';
-	const Custom_logout_button = 'mo_saml_custom_logout_text';
-	const Redirect_to_WP_login = "mo_saml_redirect_to_wp_login";
-	const Add_SSO_button = "mo_saml_add_sso_button_wp";
-	const Use_Button_as_shortcode = "mo_saml_use_button_as_shortcode";
-	const Use_Button_as_widget = "mo_saml_use_button_as_widget";
-	const SSO_Button_Size = "mo_saml_button_size";
-	const SSO_Button_Width = "mo_saml_button_width";
-	const SSO_Button_Height = "mo_saml_button_height";
-	const SSO_Button_Curve = "mo_saml_button_curve";
-	const SSO_Button_Color = "mo_saml_button_color";
-	const SSO_Button_Text = "mo_saml_button_text";
-	const SSO_Button_font_color = "mo_saml_font_color";
-	const SSO_Button_font_size = "mo_saml_font_size";
-	const SSO_Button_position = "sso_button_login_form_position";
-	const Keep_Configuration_Intact = "mo_saml_keep_settings_on_deletion";
+
+
+include "\102\141\163\151\143\x45\x6e\165\x6d\56\x70\150\160";
+class mo_options_enum_sso_login extends BasicEnum
+{
+    const Relay_state = "\x6d\157\x5f\163\x61\x6d\154\137\162\145\154\141\171\137\x73\164\141\164\145";
+    const Redirect_Idp = "\x6d\157\x5f\x73\x61\x6d\x6c\137\162\x65\147\x69\x73\x74\x65\x72\x65\144\137\x6f\x6e\154\x79\x5f\x61\x63\143\x65\163\163";
+    const Force_authentication = "\155\x6f\137\163\x61\155\154\137\146\x6f\x72\x63\x65\x5f\141\165\x74\150\x65\x6e\164\151\x63\x61\x74\151\x6f\x6e";
+    const Enable_access_RSS = "\155\157\137\163\141\x6d\x6c\137\x65\x6e\141\142\154\145\137\162\163\x73\137\141\143\143\145\163\x73";
+    const Auto_redirect = "\x6d\x6f\x5f\x73\x61\x6d\x6c\137\x65\x6e\x61\142\154\145\137\154\157\147\x69\156\137\162\145\x64\x69\162\x65\143\x74";
+    const Allow_wp_signin = "\x6d\x6f\137\163\141\x6d\154\x5f\141\154\154\157\167\137\167\160\x5f\x73\x69\147\156\x69\156";
+    const Custom_login_button = "\155\157\x5f\163\x61\155\154\137\143\165\x73\x74\157\x6d\x5f\154\157\147\151\156\137\x74\145\x78\x74";
+    const Custom_greeting_text = "\x6d\x6f\x5f\163\x61\155\x6c\x5f\x63\x75\163\164\x6f\155\137\147\162\x65\x65\x74\x69\x6e\147\137\164\x65\x78\x74";
+    const Custom_greeting_name = "\155\x6f\x5f\x73\141\x6d\154\x5f\x67\x72\x65\145\164\151\156\147\137\156\x61\x6d\x65";
+    const Custom_logout_button = "\x6d\x6f\x5f\x73\x61\x6d\x6c\x5f\143\x75\163\164\x6f\x6d\137\x6c\157\147\157\165\x74\137\164\x65\170\x74";
+    const Backdoor_url = "\155\157\x5f\163\x61\155\154\137\142\x61\x63\x6b\x64\157\x6f\162\x5f\165\x72\x6c";
 }
-
-class mo_options_enum_identity_provider extends BasicEnum{
- 	const Broker_service ='mo_saml_enable_cloud_broker';
-	const SP_Base_Url='mo_saml_sp_base_url';
-	const SP_Entity_ID = 'mo_saml_sp_entity_id';
+class mo_options_enum_identity_provider extends BasicEnum
+{
+    const Broker_service = "\x6d\157\137\x73\141\155\x6c\x5f\x65\156\x61\142\x6c\145\x5f\143\154\x6f\x75\x64\x5f\x62\162\x6f\153\145\x72";
+    const SP_Base_Url = "\x6d\x6f\x5f\x73\141\155\154\x5f\163\160\137\x62\x61\163\145\x5f\165\x72\154";
+    const SP_Entity_ID = "\155\x6f\x5f\x73\x61\x6d\154\137\163\160\x5f\145\x6e\x74\151\x74\x79\137\x69\144";
 }
-
-
-class mo_options_enum_service_provider extends BasicEnum{
-	const Identity_name ='saml_identity_name';
-	const Login_binding_type='saml_login_binding_type';
-	const Login_URL = 'saml_login_url';
-	const Logout_binding_type = 'saml_logout_binding_type';
-	const Logout_URL = 'saml_logout_url';
-	const Issuer = 'saml_issuer';
-	const X509_certificate = 'saml_x509_certificate';
-	const Request_signed = 'saml_request_signed';
-	const NameID_Format = 'saml_nameid_format';
-	const Guide_name = 'saml_identity_provider_guide_name';
-	const Is_encoding_enabled = 'mo_saml_encoding_enabled';
+class mo_options_enum_service_provider extends BasicEnum
+{
+    const Identity_name = "\163\x61\155\154\137\x69\x64\x65\156\164\x69\x74\171\x5f\x6e\x61\x6d\145";
+    const Login_binding_type = "\x73\141\155\154\137\x6c\x6f\x67\x69\x6e\x5f\x62\x69\156\x64\151\x6e\x67\137\x74\x79\160\x65";
+    const Login_URL = "\163\x61\x6d\154\x5f\x6c\157\147\151\156\x5f\x75\x72\x6c";
+    const Logout_binding_type = "\x73\141\x6d\x6c\x5f\x6c\x6f\x67\157\x75\x74\137\x62\151\156\144\151\x6e\x67\x5f\164\x79\x70\145";
+    const Logout_URL = "\x73\x61\x6d\x6c\137\154\x6f\x67\157\165\x74\x5f\x75\162\x6c";
+    const Issuer = "\x73\141\155\x6c\x5f\151\x73\163\165\145\x72";
+    const X509_certificate = "\163\x61\x6d\154\x5f\x78\x35\60\x39\137\x63\x65\x72\164\151\146\151\x63\141\164\x65";
+    const Request_signed = "\x73\x61\x6d\154\137\162\145\x71\165\145\x73\x74\x5f\x73\x69\147\156\145\x64";
+    const NameID_Format = "\x73\x61\x6d\x6c\x5f\156\x61\x6d\145\151\144\137\x66\x6f\162\155\141\164";
+    const Guide_name = "\x73\141\155\154\x5f\151\x64\145\x6e\x74\151\164\171\x5f\160\x72\157\x76\x69\144\145\162\137\147\x75\151\x64\x65\137\x6e\141\155\x65";
+    const Is_encoding_enabled = "\x6d\157\x5f\163\x61\x6d\x6c\x5f\x65\x6e\x63\x6f\144\151\x6e\x67\137\x65\156\141\142\x6c\145\144";
 }
-
-class mo_options_enum_test_configuration extends BasicEnum{
-	const SAML_REQUEST = 'mo_saml_request';
-	const SAML_RESPONSE = 'mo_saml_response';
-	const TEST_CONFIG_ERROR_LOG = 'mo_saml_test';
-	const TEST_CONFIG_ATTIBUTES = 'mo_saml_test_config_attrs';
+class mo_options_test_configuration extends BasicEnum
+{
+    const SAML_REQUEST = "\x4d\117\x5f\x53\x41\115\114\137\122\105\x51\125\105\123\x54";
+    const SAML_RESPONSE = "\115\117\137\x53\x41\x4d\114\x5f\x52\x45\x53\120\x4f\x4e\123\105";
+    const TEST_CONFIG_ERROR_LOG = "\x4d\117\x5f\x53\101\115\114\137\124\x45\x53\x54";
+    const TEST_CONFIG_ATTRS = "\155\x6f\x5f\x73\x61\x6d\154\137\164\x65\x73\x74\x5f\x63\157\x6e\146\x69\x67\x5f\141\164\x74\x72\x73";
 }
-
-class mo_options_enum_attribute_mapping extends BasicEnum{
- 	const Attribute_Username ='saml_am_username';
- 	const Attribute_Email = 'saml_am_email';
- 	const Attribute_First_name ='saml_am_first_name';
- 	const Attribute_Last_name = 'saml_am_last_name';
- 	const Attribute_Group_name ='saml_am_group_name';
- 	const Attribute_Custom_mapping = 'mo_saml_custom_attrs_mapping';
-	const Attribute_Account_matcher = 'saml_am_account_matcher';
-	const Attribute_Display_name = 'saml_am_display_name';
+class mo_options_enum_attribute_mapping extends BasicEnum
+{
+    const Attribute_Username = "\163\x61\x6d\x6c\x5f\x61\x6d\x5f\x75\163\145\x72\156\141\155\x65";
+    const Attribute_Email = "\x73\141\x6d\x6c\x5f\x61\x6d\137\145\x6d\x61\151\154";
+    const Attribute_First_name = "\x73\x61\155\x6c\137\x61\x6d\x5f\146\x69\x72\x73\164\137\156\141\x6d\x65";
+    const Attribute_Last_name = "\x73\141\x6d\154\x5f\141\155\x5f\154\x61\163\x74\137\x6e\141\155\x65";
+    const Attribute_Display_name = "\x73\x61\155\154\x5f\141\x6d\x5f\x64\151\x73\160\x6c\141\171\137\x6e\x61\155\x65";
+    const Attribute_Account_matcher = "\x73\141\x6d\154\137\x61\155\137\x61\143\x63\157\x75\x6e\x74\x5f\155\x61\x74\x63\x68\145\162";
 }
-
-class mo_options_enum_domain_restriction extends BasicEnum{
-	const Email_Domains = "saml_am_email_domains";
-	const Enable_Domain_Restriction_Login = "mo_saml_enable_domain_restriction_login";
-	const Allow_deny_user_with_Domain = "mo_saml_allow_deny_user_with_domain";
+class mo_options_enum_role_mapping extends BasicEnum
+{
+    const Role_do_not_update_existing_user = "\x73\141\x6d\x6c\x5f\x61\155\137\x64\x6f\x6e\164\x5f\x75\x70\144\x61\164\x65\137\145\x78\151\x73\x74\151\156\x67\x5f\x75\163\145\x72\x5f\162\157\x6c\145";
+    const Role_default_role = "\163\x61\155\x6c\x5f\x61\x6d\x5f\144\145\146\x61\x75\154\x74\137\165\163\145\162\137\162\x6f\154\x65";
 }
-
-class mo_options_enum_role_mapping extends BasicEnum{
-	const Role_do_not_auto_create_users = 'mo_saml_dont_create_user_if_role_not_mapped';
-	const Role_do_not_assign_role_unlisted = 'saml_am_dont_allow_unlisted_user_role';
-	const Role_do_not_update_existing_user = 'saml_am_dont_update_existing_user_role';
-	const Role_default_role ='saml_am_default_user_role';
-	const Role_do_not_login_with_roles = "saml_am_dont_allow_user_tologin_create_with_given_groups";
-	const Role_restrict_users_with_groups = "mo_saml_restrict_users_with_groups";
-	const Role_mapping = "saml_am_role_mapping";
+class mo_options_enum_custom_certificate extends BasicEnum
+{
+    const Custom_Public_Certificate = "\155\x6f\x5f\163\x61\155\x6c\x5f\x63\x75\x73\164\x6f\x6d\137\x63\x65\162\164";
+    const Custom_Private_Certificate = "\155\x6f\137\163\x61\155\154\x5f\x63\165\x73\164\157\155\137\143\x65\x72\164\137\160\x72\151\166\x61\x74\145\137\x6b\x65\171";
+    const Enable_Public_certificate = "\155\157\137\163\141\x6d\154\137\145\156\141\x62\154\145\137\x63\x75\163\x74\157\x6d\137\x63\x65\162\164\151\146\151\x63\x61\164\145";
 }
-
-class mo_options_enum_custom_certificate extends BasicEnum{
-	const Custom_Public_Certificate = 'mo_saml_custom_cert';
- 	const Custom_Private_Certificate = 'mo_saml_custom_cert_private_key';
- 	const Enable_Public_certificate = 'mo_saml_enable_custom_certificate';
+class mo_options_enum_nameid_formats extends BasicEnum
+{
+    const EMAIL = "\165\162\x6e\x3a\x6f\x61\x73\x69\163\72\x6e\141\x6d\145\x73\x3a\x74\143\x3a\123\x41\115\114\72\61\x2e\61\x3a\x6e\141\155\x65\151\144\x2d\x66\x6f\162\x6d\141\164\72\145\x6d\x61\151\154\x41\x64\x64\162\145\x73\x73";
+    const UNSPECIFIED = "\x75\162\x6e\72\157\141\x73\x69\163\x3a\x6e\x61\x6d\145\163\72\x74\143\72\123\101\115\114\x3a\x31\x2e\61\x3a\156\141\155\145\x69\144\55\x66\x6f\162\x6d\x61\164\72\x75\156\163\x70\145\143\151\146\151\145\144";
+    const TRANSIENT = "\165\162\x6e\x3a\x6f\x61\163\151\x73\x3a\156\141\155\x65\163\x3a\x74\143\x3a\x53\x41\115\x4c\x3a\62\x2e\60\72\x6e\x61\155\x65\151\144\55\x66\x6f\x72\x6d\x61\x74\72\164\162\141\156\163\151\x65\156\x74";
+    const PERSISTENT = "\165\162\x6e\72\x6f\141\163\x69\x73\x3a\156\141\x6d\145\x73\x3a\164\143\x3a\123\101\115\x4c\72\62\x2e\x30\x3a\x6e\x61\155\145\x69\144\55\146\x6f\162\x6d\141\x74\72\160\145\162\163\151\163\x74\145\x6e\x74";
 }
-
-class mo_options_enum_custom_messages extends BasicEnum{
-	const Custom_Account_Creation_Disabled_message = 'mo_saml_account_creation_disabled_msg';
-	const Custom_Restricted_Domain_message = 'mo_saml_restricted_domain_error_msg';
+class mo_options_error_constants extends BasicEnum
+{
+    const Error_no_certificate = "\x55\156\141\142\154\x65\x20\164\x6f\x20\146\x69\156\144\40\x61\40\143\x65\x72\x74\151\146\151\143\x61\164\x65\40\56";
+    const Cause_no_certificate = "\116\x6f\40\x73\x69\x67\156\x61\x74\x75\162\x65\40\146\x6f\165\156\144\40\151\156\x20\x53\101\115\114\x20\x52\x65\x73\x70\x6f\x6e\163\x65\40\157\x72\40\101\163\x73\x65\x72\164\x69\157\x6e\56\x20\x50\x6c\145\141\163\145\40\x73\x69\x67\x6e\40\141\164\x20\154\x65\x61\x73\x74\40\x6f\x6e\145\x20\x6f\146\x20\164\150\145\x6d\x2e";
+    const Error_wrong_certificate = "\125\156\x61\142\154\x65\x20\x74\x6f\40\146\151\x6e\x64\x20\141\x20\x63\x65\x72\x74\151\x66\x69\x63\141\x74\x65\40\155\141\x74\x63\150\151\156\x67\x20\164\x68\145\x20\143\157\156\x66\151\147\165\x72\x65\x64\x20\146\x69\x6e\x67\x65\x72\x70\162\x69\x6e\164\x2e";
+    const Cause_wrong_certificate = "\130\56\x35\x30\71\40\103\x65\162\164\151\146\x69\x63\x61\164\145\x20\x66\x69\145\x6c\144\x20\151\156\x20\160\154\x75\147\x69\x6e\40\144\157\145\163\40\x6e\x6f\x74\x20\x6d\141\164\143\x68\40\x74\150\145\x20\x63\x65\x72\x74\151\146\151\x63\x61\x74\x65\x20\x66\157\x75\x6e\144\40\151\156\40\x53\101\115\114\x20\x52\x65\x73\160\x6f\156\x73\x65\56";
+    const Error_invalid_audience = "\x49\156\x76\141\154\x69\x64\40\101\165\x64\151\x65\x6e\x63\x65\x20\x55\x52\x49\56";
+    const Cause_invalid_audience = "\124\x68\x65\x20\166\x61\x6c\165\x65\40\157\x66\x20\47\101\165\144\x69\x65\156\x63\x65\x20\125\x52\111\x27\x20\146\151\x65\154\x64\x20\157\x6e\40\x49\144\145\156\x74\x69\x74\x79\40\x50\162\x6f\x76\151\144\145\x72\x27\163\40\x73\151\144\x65\40\151\x73\40\151\x6e\x63\x6f\x72\x72\145\x63\x74";
+    const Error_issuer_not_verfied = "\x49\163\x73\165\145\x72\x20\143\x61\x6e\x6e\157\164\x20\x62\x65\x20\166\145\x72\151\x66\x69\145\x64\56";
+    const Cause_issuer_not_verfied = "\x49\144\x50\x20\105\156\164\151\x74\171\40\x49\x44\40\143\x6f\156\146\x69\x67\165\x72\145\x64\x20\141\x6e\x64\x20\164\150\x65\x20\157\x6e\145\40\146\157\165\156\144\x20\151\x6e\40\x53\101\x4d\114\x20\x52\x65\163\x70\x6f\x6e\x73\145\x20\144\157\40\x6e\x6f\164\x20\155\x61\x74\143\x68";
 }
-
-class mo_options_error_constants extends BasicEnum{
- 	const Error_no_certificate = "Unable to find a certificate .";
-	const Cause_no_certificate = "No signature found in SAML Response or Assertion. Please sign at least one of them.";
-	const Error_wrong_certificate = "Unable to find a certificate matching the configured fingerprint.";
-	const Cause_wrong_certificate = "X.509 Certificate field in plugin does not match the certificate found in SAML Response.";
-	const Error_invalid_audience = "Invalid Audience URI.";
-	const Cause_invalid_audience = "The value of 'Audience URI' field on Identity Provider's side is incorrect";
-	const Error_issuer_not_verfied = "Issuer cannot be verified.";
-	const Cause_issuer_not_verfied = "IdP Entity ID configured and the one found in SAML Response do not match";
+class mo_options_plugin_constants extends BasicEnum
+{
+    const CMS_Name = "\127\x50";
+    const Application_Name = "\127\x50\x20\x6d\151\x6e\151\x4f\x72\x61\x6e\x67\145\40\x53\101\x4d\x4c\x20\62\x2e\60\40\123\123\x4f\40\x50\154\165\147\x69\x6e";
+    const Application_type = "\x53\x41\x4d\x4c";
+    const Version = "\x31\x36\56\x30\x2e\x33";
+    const HOSTNAME = "\150\x74\x74\x70\x73\72\x2f\x2f\154\157\x67\x69\x6e\x2e\170\145\143\x75\x72\x69\146\171\56\x63\x6f\x6d";
+    const LICENSE_TYPE = "\127\x50\137\x53\x41\x4d\x4c\137\123\120\137\x53\x54\x41\116\104\101\x52\104\x5f\120\114\x55\107\x49\116";
+    const LICENSE_PLAN_NAME = "\x77\160\137\163\x61\x6d\154\x5f\x73\163\157\137\163\x74\x61\156\144\141\162\144\137\x70\154\141\x6e";
 }
-
-class mo_options_enum_nameid_formats extends BasicEnum{
-	const EMAIL = "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress";
-	const UNSPECIFIED = "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified";
-	const TRANSIENT = "urn:oasis:names:tc:SAML:2.0:nameid-format:transient";
-	const PERSISTENT = "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent";
-}
-
-class mo_options_plugin_constants extends  BasicEnum{
-	const CMS_Name = "WP";
-	const Application_Name = "WP miniOrange SAML 2.0 SSO Plugin";
-	const Application_type = "SAML";
-	const Version = "12.0.2";
-	const HOSTNAME = "https://login.xecurify.com";
-	const LICENSE_TYPE ="WP_SAML_SP_PLUGIN";
-	const LICENSE_PLAN_NAME = "wp_saml_sso_basic_plan";
-    const PLUGIN_CONFIG_FILENAME = "mo_saml_config.php";
-}
-
-class mo_options_plugin_idp extends  BasicEnum{
-    public static $IDP_GUIDES = array(
-        "ADFS" => "adfs",
-        "Okta" => "okta",
-        "SalesForce" => "salesforce",
-        "Google Apps" => "google-apps",
-        "Azure AD" => "azure-ad",
-        "OneLogin" => "onelogin",
-        "Keycloak" => "jboss-keycloak",
-        "MiniOrange" => "miniorange",
-        "PingFederate" => "pingfederate",
-        "PingOne" => "pingone",
-        "Centrify" => "centrify",
-        "Oracle" => "oracle-enterprise-manager",
-        "Bitium" => "bitium",
-        "Shibboleth 2" => "shibboleth2",
-        "Shibboleth 3" => "shibboleth3",
-        "SimpleSAMLphp" => "simplesaml",
-        "OpenAM" => "openam",
-        "Authanvil"=>"authanvil",
-        "Auth0"=>"auth0",
-        "CA Identity"=>"ca-identity",
-        "WSO2"=>"wso2",
-        "RSA SecureID"=>"rsa-secureid",
-        "Other"=>"Other"
-    );
-}
-
-class mo_options_plugin_admin extends BasicEnum{
-	const HOST_NAME = "mo_saml_host_name";
-	const New_Registration = "mo_saml_new_registration";
-	const Admin_Phone = "mo_saml_admin_phone";
-	const Admin_Email = "mo_saml_admin_email";
-	const Admin_Pass = "mo_saml_admin_password";
-	const Verify_Customer = "mo_saml_verify_customer";
-	const Admin_Customer_Key = "mo_saml_admin_customer_key";
-	const Admin_Api_Key = "mo_saml_admin_api_key";
-	const Customer_Token = "mo_saml_customer_token";
-	const Admin_notices_Message = "mo_saml_message";
-	const Registration_Status = "mo_saml_registration_status";
-	const IDP_Config_ID = "saml_idp_config_id";
-	const IDP_Config_Complete = "mo_saml_idp_config_complete";
-	const Transaction_ID = "mo_saml_transactionId";
-	const SML_LK = "sml_lk";
-	const Site_Status = "t_site_status";
-	const Site_Check = "site_ck_l";
-	const Free_Version = "mo_saml_free_version";
-	const Admin_company = "mo_saml_admin_company";
-	const Admin_First_Name = "mo_saml_admin_first_name";
-	const Admin_Last_Name = "mo_saml_admin_last_name";
-	const License_Name = "mo_saml_license_name";
-	const User_Limit = "mo_saml_usr_lmt";
+class mo_options_plugin_idp extends BasicEnum
+{
+    public static $IDP_GUIDES = array("\101\104\x46\123" => "\141\144\x66\x73", "\x4f\x6b\164\x61" => "\157\153\x74\141", "\123\141\x6c\145\x73\x46\x6f\x72\x63\x65" => "\163\x61\154\145\x73\x66\x6f\x72\x63\145", "\107\157\x6f\x67\x6c\145\40\x41\160\160\x73" => "\147\x6f\157\x67\154\145\55\x61\160\160\x73", "\x41\172\165\x72\x65\40\101\x44" => "\141\x7a\165\x72\145\x2d\141\x64", "\117\x6e\x65\114\157\147\151\x6e" => "\x6f\x6e\145\154\x6f\x67\151\156", "\x4b\145\171\143\x6c\x6f\141\x6b" => "\152\x62\x6f\163\x73\55\153\145\x79\143\154\157\141\x6b", "\x4d\151\156\151\117\162\x61\x6e\x67\145" => "\x6d\x69\x6e\x69\x6f\162\141\156\x67\145", "\120\151\156\147\106\x65\144\145\x72\x61\x74\145" => "\160\151\x6e\147\146\145\144\145\x72\141\x74\x65", "\120\151\156\147\117\x6e\145" => "\x70\151\x6e\x67\x6f\x6e\145", "\103\x65\156\x74\162\x69\x66\x79" => "\x63\145\x6e\x74\162\x69\x66\171", "\x4f\x72\x61\x63\x6c\145" => "\x6f\x72\141\143\x6c\x65\55\x65\156\x74\145\x72\x70\162\151\x73\x65\55\x6d\x61\x6e\x61\147\145\x72", "\x42\151\x74\x69\165\155" => "\x62\151\x74\151\x75\155", "\x53\x68\151\x62\142\157\x6c\x65\164\x68\x20\62" => "\163\150\151\142\142\157\154\x65\x74\x68\62", "\123\150\151\x62\142\x6f\154\145\x74\x68\x20\63" => "\x73\150\x69\142\x62\157\154\x65\164\150\63", "\x53\x69\x6d\160\154\145\x53\x41\115\x4c\x70\150\160" => "\163\151\x6d\x70\x6c\145\163\x61\155\154", "\117\160\145\156\x41\x4d" => "\157\160\145\156\x61\155", "\x41\x75\x74\150\141\156\x76\151\x6c" => "\141\165\x74\x68\141\156\166\151\154", "\x41\x75\x74\x68\x30" => "\141\x75\164\x68\x30", "\x43\101\40\x49\x64\x65\156\x74\151\x74\x79" => "\x63\x61\55\x69\144\145\x6e\164\x69\164\x79", "\127\x53\x4f\62" => "\167\x73\x6f\x32", "\122\x53\x41\40\123\145\143\x75\x72\x65\111\104" => "\x72\163\141\55\163\145\x63\x75\x72\145\151\144", "\x4f\164\150\145\162" => "\x4f\x74\150\x65\162");
 }

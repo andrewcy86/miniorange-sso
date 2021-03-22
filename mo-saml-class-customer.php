@@ -1,521 +1,203 @@
 <?php
-/** miniOrange SAML 2.0 SSO enables user to perform Single Sign On with any SAML 2.0 enabled Identity Provider.
- Copyright (C) 2015  miniOrange
-
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>
- * @package 		miniOrange SAML 2.0 SSO
- * @license		http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
- */
-/**
- * This library is miniOrange Authentication Service.
- *
- * Contains Request Calls to Customer service.
- */
-class Customersaml {
-	public $email;
-	public $phone;
-
-	/*
-	 * * Initial values are hardcoded to support the miniOrange framework to generate OTP for email.
-	 * * We need the default value for creating the first time,
-	 * * As we don't have the Default keys available before registering the user to our server.
-	 * * This default values are only required for sending an One Time Passcode at the user provided email address.
-	 */
-	private $defaultCustomerKey = "16555";
-	private $defaultApiKey = "fFd2XcvTGDemZvbw1bcUesNJWEqKbbUq";
-
-	function create_customer() {
-
-		$url = mo_options_plugin_constants::HOSTNAME . '/moas/rest/customer/add';
-
-		$current_user = wp_get_current_user();
-		$this->email = get_option ( 'mo_saml_admin_email' );
-		$this->phone = get_option ( 'mo_saml_admin_phone' );
-		$password = get_option ( 'mo_saml_admin_password' );
-
-		$fields = array (
-				'companyName' => $_SERVER ['SERVER_NAME'],
-				'areaOfInterest' => 'WP miniOrange SAML 2.0 SSO Plugin',
-				'firstname' => $current_user->user_firstname,
-				'lastname' => $current_user->user_lastname,
-				'email' => $this->email,
-				'phone' => $this->phone,
-				'password' => $password
-		);
-		$field_string = json_encode ( $fields );
-
-        $headers = array("Content-Type"=>"application/json","charset"=>"UTF-8","Authorization"=>"Basic");
-		$args = array(
-			'method' => 'POST',
-			'body' => $field_string,
-			'timeout' => '5',
-			'redirection' => '5',
-			'httpversion' => '1.0',
-			'blocking' => true,
-			'headers' => $headers
-		);
-		$response = SAMLSPUtilities::mo_saml_wp_remote_call($url, $args);
-		return $response;
-	}
-	function get_customer_key() {
-
-		$url = mo_options_plugin_constants::HOSTNAME . "/moas/rest/customer/key";
-
-		$email = get_option ( "mo_saml_admin_email" );
-
-		$password = get_option ( "mo_saml_admin_password" );
-
-		$fields = array (
-				'email' => $email,
-				'password' => $password
-		);
-		$field_string = json_encode ( $fields );
-
-		$headers = array("Content-Type"=>"application/json","charset"=>"UTF-8","Authorization"=>"Basic");
-		$args = array(
-			'method' => 'POST',
-			'body' => $field_string,
-			'timeout' => '5',
-			'redirection' => '5',
-			'httpversion' => '1.0',
-			'blocking' => true,
-			'headers' => $headers
-		);
-		$response = SAMLSPUtilities::mo_saml_wp_remote_call($url, $args);
-		return $response;
-	}
-	function check_customer() {
-
-		$url = mo_options_plugin_constants::HOSTNAME. "/moas/rest/customer/check-if-exists";
-
-		$email = get_option ( "mo_saml_admin_email" );
-
-		$fields = array (
-				'email' => $email
-		);
-		$field_string = json_encode ( $fields );
-
-		$headers = array("Content-Type"=>"application/json","charset"=>"UTF-8","Authorization"=>"Basic");
-		$args = array(
-			'method' => 'POST',
-			'body' => $field_string,
-			'timeout' => '5',
-			'redirection' => '5',
-			'httpversion' => '1.0',
-			'blocking' => true,
-			'headers' => $headers
-		);
-		$response = SAMLSPUtilities::mo_saml_wp_remote_call($url, $args);
-		return $response;
-	}
-	function send_otp_token($email, $phone, $sendToEmail = TRUE, $sendToPhone = FALSE) {
-		$url = mo_options_plugin_constants::HOSTNAME . '/moas/api/auth/challenge';
-
-		$customerKey = $this->defaultCustomerKey;
-		$apiKey = $this->defaultApiKey;
-
-		//$username = get_option ( 'mo_saml_admin_email' );
-
-		/* Current time in milliseconds since midnight, January 1, 1970 UTC. */
-		$currentTimeInMillis = round ( microtime ( true ) * 1000 );
-
-		/* Creating the Hash using SHA-512 algorithm */
-		$stringToHash = $customerKey . number_format ( $currentTimeInMillis, 0, '', '' ) . $apiKey;
-		$hashValue = hash ( "sha512", $stringToHash );
-
-		// $customerKeyHeader = "Customer-Key: " . $customerKey;
-		// $timestampHeader = "Timestamp: " . number_format ( $currentTimeInMillis, 0, '', '' );
-		// $authorizationHeader = "Authorization: " . $hashValue;
-		$currentTimeInMillis = number_format ( $currentTimeInMillis, 0, '', '' );
-		if ($sendToEmail) {
-			$fields = array (
-					'customerKey' => $customerKey,
-					'email' => $email,
-					'authType' => 'EMAIL',
-					'transactionName' => 'WP miniOrange SAML 2.0 SSO Plugin'
-			);
-		} else {
-			$fields = array (
-					'customerKey' => $customerKey,
-					'phone' => $phone,
-					'authType' => 'SMS',
-					'transactionName' => 'WP miniOrange SAML 2.0 SSO Plugin'
-			);
-		}
-		$field_string = json_encode ( $fields );
-
-		$headers = array(
-			"Content-Type" => "application/json",
-			"Customer-Key" => $customerKey,
-			"Timestamp" => $currentTimeInMillis,
-			"Authorization" => $hashValue
-		);
-		$args = array(
-			'method' => 'POST',
-			'body' => $field_string,
-			'timeout' => '5',
-			'redirection' => '5',
-			'httpversion' => '1.0',
-			'blocking' => true,
-			'headers' => $headers
-		);
-		$response = SAMLSPUtilities::mo_saml_wp_remote_call($url, $args);
-		return $response;
-	}
-	function validate_otp_token($transactionId, $otpToken) {
-		$url = mo_options_plugin_constants::HOSTNAME . '/moas/api/auth/validate';
 
 
-		$customerKey = $this->defaultCustomerKey;
-		$apiKey = $this->defaultApiKey;
-
-		$username = get_option ( 'mo_saml_admin_email' );
-
-		/* Current time in milliseconds since midnight, January 1, 1970 UTC. */
-		$currentTimeInMillis = round ( microtime ( true ) * 1000 );
-
-		/* Creating the Hash using SHA-512 algorithm */
-		$stringToHash = $customerKey . number_format ( $currentTimeInMillis, 0, '', '' ) . $apiKey;
-		$hashValue = hash ( "sha512", $stringToHash );
-
-		// $customerKeyHeader = "Customer-Key: " . $customerKey;
-		// $timestampHeader = "Timestamp: " . number_format ( $currentTimeInMillis, 0, '', '' );
-		// $authorizationHeader = "Authorization: " . $hashValue;
-		$currentTimeInMillis = number_format ( $currentTimeInMillis, 0, '', '' );
-		$fields = '';
-
-		// *check for otp over sms/email
-		$fields = array (
-				'txId' => $transactionId,
-				'token' => $otpToken
-		);
-
-		$field_string = json_encode ( $fields );
-
-		$headers = array(
-			"Content-Type" => "application/json",
-			"Customer-Key" => $customerKey,
-			"Timestamp" => $currentTimeInMillis,
-			"Authorization" => $hashValue
-		);
-		$args = array(
-			'method' => 'POST',
-			'body' => $field_string,
-			'timeout' => '5',
-			'redirection' => '5',
-			'httpversion' => '1.0',
-			'blocking' => true,
-			'headers' => $headers
-		);
-		$response = SAMLSPUtilities::mo_saml_wp_remote_call($url, $args);
-		return $response;
-	}
-	function submit_contact_us($email, $phone, $query) {
-		$current_user = wp_get_current_user();
-		$query = '[WP SAML 2.0 SP SSO Premium Plugin] ' . $query;
-		$fields = array (
-				'firstName' => $current_user->user_firstname,
-				'lastName' => $current_user->user_lastname,
-				'company' => $_SERVER ['SERVER_NAME'],
-                'ccEmail'=>'samlsupport@xecurify.com',
-				'email' => $email,
-				'phone' => $phone,
-				'query' => $query
-		);
-		$field_string = json_encode ( $fields );
-
-		$url = mo_options_plugin_constants::HOSTNAME. '/moas/rest/customer/contact-us';
-
-		$headers = array("Content-Type"=>"application/json","charset"=>"UTF-8","Authorization"=>"Basic");
-		$args = array(
-			'method' => 'POST',
-			'body' => $field_string,
-			'timeout' => '5',
-			'redirection' => '5',
-			'httpversion' => '1.0',
-			'blocking' => true,
-			'headers' => $headers
-		);
-		$response = SAMLSPUtilities::mo_saml_wp_remote_call($url, $args);
-		return $response;
-	}
-
-    function send_email_alert($email,$phone,$message){
-
-        $url = mo_options_plugin_constants::HOSTNAME . '/moas/api/notify/send';
-
-        $customerKey = $this->defaultCustomerKey;
-        $apiKey =  $this->defaultApiKey;
-
-        $currentTimeInMillis = self::get_timestamp();
-        $currentTimeInMillis = number_format ( $currentTimeInMillis, 0, '', '' );
-        $stringToHash 		= $customerKey .  $currentTimeInMillis . $apiKey;
-        $hashValue 			= hash("sha512", $stringToHash);
-        $fromEmail			= 'no-reply@xecurify.com';
-        $subject            = "Feedback: WordPress SAML 2.0 SSO Plugin";
-        $site_url=site_url();
-
-        global $user;
-        $user         = wp_get_current_user();
-
-
-        $query        = '[WordPress SAML SSO 2.0 Plugin: ]: ' . $message;
-
-
-        $content='<div >Hello, <br><br>First Name :'.$user->user_firstname.'<br><br>Last  Name :'.$user->user_lastname.'   <br><br>Company :<a href="'.$_SERVER['SERVER_NAME'].'" target="_blank" >'.$_SERVER['SERVER_NAME'].'</a><br><br>Phone Number :'.$phone.'<br><br>Email :<a href="mailto:'.$email.'" target="_blank">'.$email.'</a><br><br>Query :'.$query.'</div>';
-
-
-        $fields = array(
-            'customerKey'	=> $customerKey,
-            'sendEmail' 	=> true,
-            'email' 		=> array(
-                'customerKey' 	=> $customerKey,
-                'fromEmail' 	=> $fromEmail,
-                'bccEmail' 		=> $fromEmail,
-                'fromName' 		=> 'Xecurify',
-                'toEmail' 		=> 'info@xecurify.com',
-                'toName' 		=> 'samlsupport@xecurify.com',
-                'bccEmail'		=> 'samlsupport@xecurify.com',
-                'subject' 		=> $subject,
-                'content' 		=> $content
-            ),
-        );
-        $field_string = json_encode($fields);
-
-        $headers = array(
-            "Content-Type" => "application/json",
-            "Customer-Key" => $customerKey,
-            "Timestamp" => $currentTimeInMillis,
-            "Authorization" => $hashValue
-        );
-        $args = array(
-            'method' => 'POST',
-            'body' => $field_string,
-            'timeout' => '5',
-            'redirection' => '5',
-            'httpversion' => '1.0',
-            'blocking' => true,
-            'headers' => $headers
-        );
-        $response = SAMLSPUtilities::mo_saml_wp_remote_call($url, $args);
-        return $response['body'];
-
+class Customersaml
+{
+    public $email;
+    public $phone;
+    private $defaultCustomerKey = "\x31\x36\65\65\65";
+    private $defaultApiKey = "\146\x46\x64\x32\x58\x63\166\x54\107\104\145\155\x5a\166\142\x77\61\x62\143\x55\x65\x73\116\x4a\x57\105\161\113\x62\x62\x55\x71";
+    function create_customer()
+    {
+        $pZ = mo_options_plugin_constants::HOSTNAME . "\57\155\157\x61\x73\57\x72\x65\163\164\57\143\165\x73\164\x6f\155\145\x72\x2f\141\144\144";
+        $current_user = wp_get_current_user();
+        $this->email = get_option("\155\157\137\x73\x61\155\154\137\141\144\x6d\x69\x6e\137\145\x6d\141\151\x6c");
+        $this->phone = get_option("\155\157\137\163\x61\155\154\x5f\141\144\x6d\151\x6e\137\x70\150\x6f\x6e\x65");
+        $nv = get_option("\155\157\137\x73\141\155\x6c\x5f\x61\144\x6d\x69\x6e\137\160\141\163\163\x77\x6f\x72\144");
+        $O9 = array("\143\157\155\160\x61\x6e\x79\116\141\x6d\x65" => $_SERVER["\123\x45\122\126\x45\x52\137\x4e\x41\115\105"], "\x61\x72\145\141\x4f\x66\111\156\x74\145\162\145\x73\x74" => "\127\120\40\x6d\x69\x6e\x69\117\x72\141\156\x67\x65\40\123\x41\115\x4c\40\x32\56\x30\40\123\x53\x4f\40\x50\154\x75\147\151\x6e", "\x66\x69\x72\163\164\156\141\155\145" => $current_user->user_firstname, "\154\141\163\164\x6e\x61\155\x65" => $current_user->user_lastname, "\x65\x6d\x61\151\x6c" => $this->email, "\160\x68\157\156\x65" => $this->phone, "\160\x61\x73\163\167\157\x72\144" => $nv);
+        $Gu = json_encode($O9);
+        $ym = array("\103\x6f\x6e\164\x65\156\164\55\x54\171\x70\145" => "\141\160\x70\x6c\151\143\141\164\x69\x6f\156\57\x6a\x73\x6f\156", "\x63\150\x61\162\x73\145\164" => "\x55\x54\x46\55\x38", "\x41\165\164\x68\157\162\151\172\141\164\x69\157\x6e" => "\x42\x61\x73\x69\143");
+        $kF = array("\x6d\145\164\150\x6f\144" => "\x50\117\123\124", "\142\x6f\x64\x79" => $Gu, "\x74\151\x6d\x65\x6f\165\164" => "\65", "\x72\145\x64\151\162\145\x63\164\x69\x6f\x6e" => "\65", "\x68\164\164\160\x76\x65\162\x73\151\x6f\x6e" => "\61\x2e\60", "\x62\154\x6f\x63\153\x69\156\147" => true, "\150\x65\x61\144\145\162\x73" => $ym);
+        $b0 = SAMLSPUtilities::mo_saml_wp_remote_call($pZ, $kF);
+        return $b0;
     }
-
-	function mo_saml_forgot_password($email) {
-		$url = mo_options_plugin_constants::HOSTNAME. '/moas/rest/customer/password-reset';
-
-
-		/* The customer Key provided to you */
-		$customerKey = get_option ( 'mo_saml_admin_customer_key' );
-
-		/* The customer API Key provided to you */
-		$apiKey = get_option ( 'mo_saml_admin_api_key' );
-
-		/* Current time in milliseconds since midnight, January 1, 1970 UTC. */
-		$currentTimeInMillis = round ( microtime ( true ) * 1000 );
-
-		/* Creating the Hash using SHA-512 algorithm */
-		$stringToHash = $customerKey . number_format ( $currentTimeInMillis, 0, '', '' ) . $apiKey;
-		$hashValue = hash ( "sha512", $stringToHash );
-
-		// $customerKeyHeader = "Customer-Key: " . $customerKey;
-		// $timestampHeader = "Timestamp: " . number_format ( $currentTimeInMillis, 0, '', '' );
-		// $authorizationHeader = "Authorization: " . $hashValue;
-		$currentTimeInMillis = number_format ( $currentTimeInMillis, 0, '', '' );
-		$fields = '';
-
-		// *check for otp over sms/email
-		$fields = array (
-				'email' => $email
-		);
-
-		$field_string = json_encode ( $fields );
-
-		$headers = array(
-			"Content-Type" => "application/json",
-			"Customer-Key" => $customerKey,
-			"Timestamp" => $currentTimeInMillis,
-			"Authorization" => $hashValue
-		);
-		$args = array(
-			'method' => 'POST',
-			'body' => $field_string,
-			'timeout' => '5',
-			'redirection' => '5',
-			'httpversion' => '1.0',
-			'blocking' => true,
-			'headers' => $headers
-		);
-		$response = SAMLSPUtilities::mo_saml_wp_remote_call($url, $args);
-		return $response;
-	}
-
-	function mo_saml_vl($code,$active) {
-
-		if(!$this->check_internet_connection()){
-			return '{"status":"SUCCESS"}';
-		}
-
-		$url = "";
-		if($active)
-			$url = mo_options_plugin_constants::HOSTNAME . '/moas/api/backupcode/check';
-		else
-			$url = mo_options_plugin_constants::HOSTNAME . '/moas/api/backupcode/verify';
-
-
-
-		/* The customer Key provided to you */
-		$customerKey = get_option ( 'mo_saml_admin_customer_key' );
-
-		/* The customer API Key provided to you */
-		$apiKey = get_option ( 'mo_saml_admin_api_key' );
-
-		/* Current time in milliseconds since midnight, January 1, 1970 UTC. */
-		$currentTimeInMillis = round ( microtime ( true ) * 1000 );
-
-		/* Creating the Hash using SHA-512 algorithm */
-		$stringToHash = $customerKey . number_format ( $currentTimeInMillis, 0, '', '' ) . $apiKey;
-		$hashValue = hash ( "sha512", $stringToHash );
-
-		// $customerKeyHeader = "Customer-Key: " . $customerKey;
-		// $timestampHeader = "Timestamp: " . number_format ( $currentTimeInMillis, 0, '', '' );
-		// $authorizationHeader = "Authorization: " . $hashValue;
-		$currentTimeInMillis = number_format ( $currentTimeInMillis, 0, '', '' );
-		$fields = '';
-
-		// *check for otp over sms/email
-
-		$fields = array (
-				'code' => $code ,
-				'customerKey' => $customerKey,
-				'additionalFields' => array(
-					'field1' => home_url()
-				)
-
-		);
-
-		$field_string = json_encode ( $fields );
-
-		$headers = array(
-			"Content-Type" => "application/json",
-			"Customer-Key" => $customerKey,
-			"Timestamp" => $currentTimeInMillis,
-			"Authorization" => $hashValue
-		);
-
-		$args = array(
-			'method' => 'POST',
-			'body' => $field_string,
-			'timeout' => '5',
-			'redirection' => '5',
-			'httpversion' => '1.0',
-			'blocking' => true,
-			'headers' => $headers
-		);
-		$response = SAMLSPUtilities::mo_saml_wp_remote_call($url, $args);
-		return $response;
-	}
-
-	function check_customer_ln(){
-
-		$url = mo_options_plugin_constants::HOSTNAME . '/moas/rest/customer/license';
-
-		$customerKey = get_option ( 'mo_saml_admin_customer_key' );
-
-		$apiKey = get_option ( 'mo_saml_admin_api_key' );
-		$currentTimeInMillis = round(microtime(true) * 1000);
-		$stringToHash = $customerKey . number_format($currentTimeInMillis, 0, '', '') . $apiKey;
-		$hashValue = hash("sha512", $stringToHash);
-		$currentTimeInMillis = number_format ( $currentTimeInMillis, 0, '', '' );
-
-		// $customerKeyHeader = "Customer-Key: " . $customerKey;
-		// $timestampHeader = "Timestamp: " . $currentTimeInMillis;
-		// $authorizationHeader = "Authorization: " . $hashValue;
-		$fields = '';
-		$fields = array(
-			'customerId' => $customerKey,
-			'applicationName' => 'wp_saml_sso_basic_plan'
-		);
-		$field_string = json_encode($fields);
-		$headers = array(
-			"Content-Type" => "application/json",
-			"Customer-Key" => $customerKey,
-			"Timestamp" => $currentTimeInMillis,
-			"Authorization" => $hashValue
-		);
-
-		$args = array(
-			'method' => 'POST',
-			'body' => $field_string,
-			'timeout' => '5',
-			'redirection' => '5',
-			'httpversion' => '1.0',
-			'blocking' => true,
-			'headers' => $headers
-		);
-		$response = SAMLSPUtilities::mo_saml_wp_remote_call($url, $args);
-		return $response;
-	}
-
-	function mo_saml_update_status() {
-
-		$url = mo_options_plugin_constants::HOSTNAME . '/moas/api/backupcode/updatestatus';
-		$customerKey = get_option ( 'mo_saml_admin_customer_key' );
-		$apiKey = get_option ( 'mo_saml_admin_api_key' );
-		$currentTimeInMillis = round ( microtime ( true ) * 1000 );
-		$stringToHash = $customerKey . number_format ( $currentTimeInMillis, 0, '', '' ) . $apiKey;
-		$hashValue = hash ( "sha512", $stringToHash );
-		// $customerKeyHeader = "Customer-Key: " . $customerKey;
-		// $timestampHeader = "Timestamp: " . number_format ( $currentTimeInMillis, 0, '', '' );
-		// $authorizationHeader = "Authorization: " . $hashValue;
-		$key = get_option('mo_saml_customer_token');
-		$code = AESEncryption::decrypt_data(get_option('sml_lk'),$key);
-		$fields = array ( 'code' => $code , 'customerKey' => $customerKey, 'additionalFields' => array('field1' => home_url()) );
-		$field_string = json_encode ( $fields );
-		$currentTimeInMillis = number_format ( $currentTimeInMillis, 0, '', '' );
-		$headers = array(
-			"Content-Type" => "application/json",
-			"Customer-Key" => $customerKey,
-			"Timestamp" => $currentTimeInMillis,
-			"Authorization" => $hashValue
-		);
-
-		$args = array(
-			'method' => 'POST',
-			'body' => $field_string,
-			'timeout' => '5',
-			'redirection' => '5',
-			'httpversion' => '1.0',
-			'blocking' => true,
-			'headers' => $headers
-		);
-		$response = SAMLSPUtilities::mo_saml_wp_remote_call($url, $args);
-		return $response;
-	}
-
-	function get_timestamp() {
-		$url = mo_options_plugin_constants::HOSTNAME . '/moas/rest/mobile/get-timestamp';
-		$response = SAMLSPUtilities::mo_saml_wp_remote_call($url);
-		return $response;
-
-	}
-
-	function check_internet_connection()
-	{
-		return (bool) @fsockopen('login.xecurify.com', 443, $iErrno, $sErrStr, 5);
-	}
-
+    function get_customer_key()
+    {
+        $pZ = mo_options_plugin_constants::HOSTNAME . "\57\x6d\x6f\x61\163\x2f\x72\x65\163\164\x2f\x63\165\163\x74\x6f\155\145\x72\57\153\x65\171";
+        $OH = get_option("\x6d\x6f\137\163\141\x6d\x6c\137\x61\144\x6d\151\156\x5f\145\155\x61\151\154");
+        $nv = get_option("\x6d\x6f\x5f\x73\141\x6d\154\137\x61\144\x6d\151\x6e\x5f\160\141\163\x73\x77\157\x72\x64");
+        $O9 = array("\145\155\x61\x69\154" => $OH, "\160\x61\x73\163\167\x6f\x72\x64" => $nv);
+        $Gu = json_encode($O9);
+        $ym = array("\x43\157\x6e\164\x65\x6e\164\x2d\124\x79\160\x65" => "\141\x70\x70\x6c\x69\143\141\x74\151\x6f\156\57\152\163\x6f\x6e", "\143\150\141\x72\163\145\164" => "\x55\124\x46\x2d\x38", "\x41\x75\164\150\x6f\162\x69\x7a\x61\x74\151\x6f\x6e" => "\x42\141\x73\x69\143");
+        $kF = array("\155\145\164\150\x6f\144" => "\120\x4f\x53\124", "\142\157\x64\x79" => $Gu, "\x74\151\x6d\x65\157\165\164" => "\65", "\x72\x65\144\151\x72\x65\143\164\151\157\156" => "\65", "\x68\164\x74\160\x76\145\x72\163\x69\157\x6e" => "\x31\x2e\x30", "\142\x6c\x6f\143\x6b\x69\x6e\x67" => true, "\x68\145\x61\144\x65\x72\163" => $ym);
+        $b0 = SAMLSPUtilities::mo_saml_wp_remote_call($pZ, $kF);
+        return $b0;
+    }
+    function check_customer()
+    {
+        $pZ = mo_options_plugin_constants::HOSTNAME . "\57\x6d\157\x61\x73\x2f\162\x65\x73\164\57\143\x75\x73\164\x6f\155\x65\x72\57\x63\x68\145\143\x6b\55\151\146\x2d\145\170\x69\x73\164\163";
+        $OH = get_option("\155\157\137\163\x61\x6d\154\x5f\141\x64\x6d\151\x6e\x5f\145\155\141\x69\154");
+        $O9 = array("\x65\x6d\141\x69\x6c" => $OH);
+        $Gu = json_encode($O9);
+        $ym = array("\x43\x6f\x6e\x74\145\x6e\164\x2d\x54\171\160\145" => "\141\160\x70\154\x69\143\x61\x74\x69\x6f\156\x2f\152\x73\x6f\x6e", "\x63\x68\141\162\163\x65\x74" => "\x55\x54\106\55\70", "\x41\x75\x74\x68\x6f\x72\x69\x7a\141\164\151\x6f\156" => "\102\x61\163\151\143");
+        $kF = array("\x6d\145\164\150\157\144" => "\x50\x4f\x53\x54", "\x62\157\x64\x79" => $Gu, "\164\x69\155\x65\x6f\x75\164" => "\x35", "\x72\145\x64\151\162\145\143\164\151\x6f\x6e" => "\x35", "\x68\164\x74\160\166\145\x72\163\151\157\x6e" => "\61\x2e\x30", "\x62\x6c\157\x63\x6b\151\156\x67" => true, "\x68\145\x61\x64\145\162\x73" => $ym);
+        $b0 = SAMLSPUtilities::mo_saml_wp_remote_call($pZ, $kF);
+        return $b0;
+    }
+    function send_otp_token($OH, $En, $hB = TRUE, $a2 = FALSE)
+    {
+        $pZ = mo_options_plugin_constants::HOSTNAME . "\x2f\155\x6f\x61\x73\x2f\141\x70\x69\57\x61\165\x74\x68\57\143\x68\141\x6c\x6c\x65\156\x67\x65";
+        $Xs = $this->defaultCustomerKey;
+        $oA = $this->defaultApiKey;
+        $Fc = round(microtime(true) * 1000);
+        $nF = $Xs . number_format($Fc, 0, '', '') . $oA;
+        $lE = hash("\x73\150\x61\65\x31\x32", $nF);
+        $Fc = number_format($Fc, 0, '', '');
+        if ($hB) {
+            goto JD;
+        }
+        $O9 = array("\143\165\x73\164\157\x6d\145\x72\x4b\x65\x79" => $Xs, "\160\x68\x6f\x6e\x65" => $En, "\141\x75\164\x68\x54\x79\x70\145" => "\123\x4d\x53", "\164\162\141\x6e\163\x61\143\x74\151\x6f\156\116\x61\155\145" => "\x57\120\40\155\x69\x6e\151\x4f\162\141\156\x67\x65\x20\x53\x41\x4d\114\x20\62\56\60\40\123\x53\117\x20\x50\154\165\x67\x69\156");
+        goto fT;
+        JD:
+        $O9 = array("\x63\165\x73\164\x6f\155\x65\162\x4b\x65\x79" => $Xs, "\145\x6d\141\151\x6c" => $OH, "\x61\165\x74\x68\124\171\160\x65" => "\105\x4d\101\111\x4c", "\164\162\x61\x6e\x73\x61\x63\164\151\157\156\116\141\155\x65" => "\127\120\40\155\151\156\x69\117\162\x61\x6e\x67\145\40\x53\x41\x4d\x4c\x20\62\x2e\x30\x20\x53\123\x4f\x20\120\x6c\165\x67\151\156");
+        fT:
+        $Gu = json_encode($O9);
+        $ym = array("\103\157\x6e\x74\x65\x6e\x74\55\x54\x79\160\x65" => "\141\x70\160\x6c\151\143\x61\x74\x69\x6f\156\x2f\152\163\157\x6e", "\103\165\163\164\157\155\145\x72\x2d\113\x65\171" => $Xs, "\124\151\155\x65\x73\164\141\x6d\x70" => $Fc, "\101\165\x74\x68\157\162\x69\x7a\141\x74\x69\x6f\x6e" => $lE);
+        $kF = array("\x6d\145\164\x68\x6f\x64" => "\120\117\x53\x54", "\142\157\x64\x79" => $Gu, "\x74\x69\155\145\x6f\x75\164" => "\x35", "\162\x65\x64\x69\162\145\143\x74\151\x6f\156" => "\65", "\150\x74\x74\x70\x76\x65\162\x73\151\157\156" => "\x31\x2e\x30", "\142\154\157\143\153\151\156\147" => true, "\x68\x65\x61\144\x65\162\163" => $ym);
+        $b0 = SAMLSPUtilities::mo_saml_wp_remote_call($pZ, $kF);
+        return $b0;
+    }
+    function validate_otp_token($lU, $Ae)
+    {
+        $pZ = mo_options_plugin_constants::HOSTNAME . "\57\x6d\157\141\163\57\x61\160\x69\x2f\141\x75\164\150\x2f\166\141\154\151\144\x61\x74\145";
+        $Xs = $this->defaultCustomerKey;
+        $oA = $this->defaultApiKey;
+        $lf = get_option("\x6d\157\137\x73\x61\155\x6c\x5f\x61\x64\155\x69\156\x5f\x65\x6d\x61\151\x6c");
+        $Fc = round(microtime(true) * 1000);
+        $nF = $Xs . number_format($Fc, 0, '', '') . $oA;
+        $lE = hash("\x73\x68\141\65\61\x32", $nF);
+        $Fc = number_format($Fc, 0, '', '');
+        $O9 = '';
+        $O9 = array("\164\170\111\144" => $lU, "\x74\157\153\145\x6e" => $Ae);
+        $Gu = json_encode($O9);
+        $ym = array("\103\x6f\x6e\164\x65\x6e\x74\x2d\124\x79\160\x65" => "\141\160\160\154\x69\x63\x61\164\151\157\x6e\x2f\152\x73\x6f\156", "\x43\165\x73\x74\157\x6d\x65\162\55\113\145\x79" => $Xs, "\124\151\155\145\163\x74\141\155\160" => $Fc, "\x41\x75\x74\x68\157\162\x69\172\x61\x74\x69\157\x6e" => $lE);
+        $kF = array("\x6d\x65\x74\150\157\x64" => "\120\117\x53\124", "\x62\x6f\144\171" => $Gu, "\164\x69\155\145\157\165\x74" => "\65", "\x72\x65\144\x69\x72\145\x63\164\x69\x6f\x6e" => "\65", "\x68\x74\x74\x70\x76\x65\x72\x73\151\157\x6e" => "\61\56\x30", "\x62\154\157\143\x6b\151\x6e\147" => true, "\150\145\141\144\x65\162\x73" => $ym);
+        $b0 = SAMLSPUtilities::mo_saml_wp_remote_call($pZ, $kF);
+        return $b0;
+    }
+    function submit_contact_us($OH, $En, $KK)
+    {
+        $current_user = wp_get_current_user();
+        $KK = "\x5b\127\120\40\123\101\x4d\114\40\62\x2e\60\40\x53\x50\40\x53\x53\x4f\x20\x53\x74\x61\156\144\141\162\x64\40\120\154\165\x67\x69\x6e\x5d\40" . $KK;
+        $O9 = array("\146\151\162\x73\164\116\141\x6d\x65" => $current_user->user_firstname, "\x6c\141\163\x74\x4e\x61\155\145" => $current_user->user_lastname, "\143\x6f\155\x70\x61\156\171" => $_SERVER["\123\x45\x52\126\x45\x52\x5f\116\x41\x4d\x45"], "\143\143\x45\155\x61\151\x6c" => "\x73\141\x6d\x6c\163\x75\x70\x70\x6f\162\164\100\x78\x65\x63\x75\162\151\x66\x79\x2e\143\x6f\x6d", "\x65\155\141\151\x6c" => $OH, "\160\x68\x6f\x6e\145" => $En, "\x71\165\145\x72\171" => $KK);
+        $Gu = json_encode($O9);
+        $pZ = mo_options_plugin_constants::HOSTNAME . "\57\x6d\157\141\x73\57\162\145\x73\x74\57\x63\x75\x73\x74\157\155\145\162\x2f\143\157\x6e\x74\x61\x63\164\x2d\x75\x73";
+        $ym = array("\x43\157\x6e\164\x65\x6e\164\55\124\171\160\145" => "\x61\160\160\154\x69\143\141\x74\x69\157\x6e\x2f\x6a\x73\157\156", "\x63\x68\x61\162\163\145\x74" => "\x55\x54\x46\55\x38", "\x41\165\164\x68\x6f\162\x69\172\141\164\151\157\x6e" => "\x42\x61\x73\x69\143");
+        $kF = array("\155\x65\164\x68\x6f\144" => "\x50\x4f\123\124", "\x62\x6f\x64\171" => $Gu, "\164\x69\155\145\x6f\x75\164" => "\65", "\162\145\144\x69\x72\x65\143\x74\151\157\156" => "\65", "\150\164\x74\x70\x76\x65\x72\x73\x69\x6f\x6e" => "\61\56\60", "\142\x6c\157\x63\153\x69\x6e\147" => true, "\x68\145\141\x64\145\x72\163" => $ym);
+        $b0 = SAMLSPUtilities::mo_saml_wp_remote_call($pZ, $kF);
+        return $b0;
+    }
+    function mo_saml_send_alert_email($gx)
+    {
+        $pZ = mo_options_plugin_constants::HOSTNAME . "\x2f\155\x6f\x61\163\x2f\141\160\x69\57\x6e\157\164\151\146\x79\x2f\x73\x65\156\x64";
+        $Xs = get_option("\x6d\x6f\x5f\x73\141\155\x6c\x5f\141\x64\155\x69\156\137\x63\165\163\x74\x6f\x6d\145\162\137\153\145\171");
+        $oA = get_option("\x6d\x6f\137\x73\x61\155\x6c\137\x61\144\x6d\151\x6e\137\x61\x70\x69\137\153\145\x79");
+        $Fc = round(microtime(true) * 1000);
+        $nF = $Xs . number_format($Fc, 0, '', '') . $oA;
+        $lE = hash("\x73\x68\141\x35\x31\62", $nF);
+        $w5 = get_option("\155\x6f\137\163\x61\x6d\x6c\x5f\x61\x64\155\x69\156\x5f\145\x6d\141\x69\154");
+        $NE = "\x48\x65\154\x6c\157\54\74\142\162\x3e\74\142\162\x3e\x59\157\x75\162\x20\74\142\x3e\x46\122\105\105\x20\x54\162\151\x61\154\74\x2f\x62\76\40\x77\151\x6c\154\40\145\x78\x70\151\162\145\40\x69\156\x20" . $gx . "\x20\x64\141\x79\163\x20\146\157\x72\40\155\151\156\151\117\x72\141\156\x67\x65\x20\123\x41\115\114\40\160\x6c\165\147\x69\156\40\157\156\x20\171\157\165\x72\40\x77\x65\x62\163\x69\164\x65\40\74\x62\76" . get_bloginfo() . "\x3c\57\x62\x3e\56\x3c\x62\162\76\74\x62\x72\76" . addLink("\x43\x6c\x69\143\153\40\150\145\x72\145", "\150\164\164\x70\163\72\x2f\x2f\141\165\164\x68\x2e\155\x69\156\x69\157\x72\141\156\147\145\x2e\x63\157\155\57\155\157\x61\x73\x2f\154\x6f\147\151\x6e\x3f\x72\x65\x64\x69\162\x65\x63\x74\125\x72\x6c\75\x68\x74\164\160\163\x3a\57\57\141\165\x74\x68\x2e\155\x69\x6e\151\x6f\x72\x61\156\x67\145\56\143\157\x6d\x2f\155\157\141\x73\57\x69\156\151\x74\x69\x61\154\151\x7a\145\160\141\x79\155\145\156\164\x26\162\145\x71\x75\145\163\164\117\162\x69\147\151\x6e\x3d\x77\160\x5f\163\x61\x6d\x6c\137\x73\x73\157\x5f\142\x61\x73\x69\143\x5f\x70\x6c\141\x6e") . "\40\164\x6f\40\165\x70\147\x72\x61\x64\145\40\x74\x6f\x20\x6f\165\x72\40\160\162\145\155\151\165\155\40\x70\154\141\156\x20\163\x6f\x6f\x6e\40\151\x66\x20\171\157\x75\40\167\x61\x6e\164\x20\164\x6f\x20\x63\157\x6e\x74\x69\x6e\165\x65\40\165\x73\151\x6e\147\x20\157\x75\162\40\x70\154\165\x67\151\156\56\40\x59\x6f\165\40\143\141\156\x20\x72\145\146\x65\162\x20\114\x69\x63\x65\156\x73\151\156\x67\x20\x74\x61\x62\40\x66\157\162\40\x6f\x75\162\40\160\162\145\x6d\x69\x75\155\40\160\x6c\141\x6e\x73\x2e\74\142\162\x3e\x3c\142\x72\76\124\150\141\156\x6b\163\x2c\74\142\x72\x3e\x6d\151\156\151\117\x72\x61\x6e\x67\x65";
+        $Fc = number_format($Fc, 0, '', '');
+        $MF = "\124\162\x69\x61\x6c\x20\166\145\162\x73\151\157\156\40\x65\170\160\x69\x72\x69\x6e\x67\40\151\156\40" . $gx . "\40\144\x61\171\x73\x20\x66\x6f\x72\x20\155\151\x6e\151\117\x72\x61\x6e\147\145\x20\123\101\x4d\x4c\x20\160\154\165\147\x69\156\x20\174\x20" . get_bloginfo();
+        if (!($gx == 1)) {
+            goto wv;
+        }
+        $NE = str_replace("\144\141\171\x73", "\144\141\x79", $NE);
+        $MF = str_replace("\144\141\x79\x73", "\144\x61\x79", $MF);
+        wv:
+        $O9 = array("\x63\165\163\164\x6f\x6d\x65\162\113\x65\x79" => $Xs, "\163\x65\156\144\x45\x6d\141\x69\154" => true, "\x65\x6d\141\x69\154" => array("\x63\x75\163\164\x6f\x6d\x65\x72\x4b\145\171" => $Xs, "\146\162\x6f\155\x45\x6d\141\151\x6c" => "\151\156\x66\x6f\x40\170\x65\143\x75\x72\x69\146\171\56\143\x6f\155", "\x62\143\143\x45\x6d\x61\x69\x6c" => "\141\x6e\x69\162\x62\141\156\x40\x78\x65\x63\165\162\151\146\171\x2e\x63\x6f\155", "\146\x72\x6f\155\x4e\141\155\x65" => "\155\x69\x6e\x69\x4f\x72\x61\156\x67\145", "\x74\157\105\x6d\141\151\x6c" => $w5, "\164\x6f\116\x61\x6d\145" => $w5, "\x73\x75\142\x6a\x65\x63\164" => $MF, "\143\x6f\x6e\164\145\156\164" => $NE));
+        $Gu = json_encode($O9);
+        $ym = array("\103\x6f\x6e\164\145\156\164\55\124\x79\160\x65" => "\141\x70\x70\154\151\143\141\164\x69\x6f\156\x2f\152\x73\157\156", "\103\x75\163\x74\x6f\x6d\x65\162\x2d\x4b\x65\171" => $Xs, "\124\x69\155\x65\163\x74\x61\x6d\x70" => $Fc, "\101\165\164\x68\x6f\162\151\172\x61\x74\151\157\x6e" => $lE);
+        $kF = array("\x6d\145\x74\x68\157\x64" => "\x50\117\123\x54", "\142\x6f\x64\x79" => $Gu, "\x74\151\155\x65\x6f\x75\x74" => "\x35", "\162\x65\x64\151\x72\145\x63\164\x69\157\x6e" => "\x35", "\x68\164\x74\160\x76\x65\x72\x73\x69\x6f\156" => "\61\x2e\x30", "\x62\154\x6f\x63\x6b\x69\156\147" => true, "\x68\x65\141\x64\x65\x72\163" => $ym);
+        $b0 = SAMLSPUtilities::mo_saml_wp_remote_call($pZ, $kF);
+        return $b0;
+    }
+    function mo_saml_forgot_password($OH)
+    {
+        $pZ = mo_options_plugin_constants::HOSTNAME . "\x2f\x6d\157\x61\163\57\x72\145\163\164\x2f\x63\165\x73\x74\x6f\155\x65\162\x2f\x70\x61\163\x73\167\x6f\162\144\x2d\162\145\163\x65\x74";
+        $Xs = get_option("\x6d\157\x5f\x73\x61\x6d\x6c\137\x61\144\155\x69\156\137\x63\x75\163\164\x6f\155\145\x72\137\x6b\145\x79");
+        $oA = get_option("\x6d\157\x5f\x73\141\155\154\137\141\x64\x6d\x69\156\137\141\160\151\137\153\x65\x79");
+        $Fc = round(microtime(true) * 1000);
+        $nF = $Xs . number_format($Fc, 0, '', '') . $oA;
+        $lE = hash("\163\x68\141\65\61\62", $nF);
+        $Fc = number_format($Fc, 0, '', '');
+        $O9 = '';
+        $O9 = array("\x65\x6d\x61\151\x6c" => $OH);
+        $Gu = json_encode($O9);
+        $ym = array("\x43\x6f\x6e\164\145\156\x74\55\x54\171\160\x65" => "\141\160\x70\x6c\151\143\x61\x74\x69\x6f\x6e\x2f\152\163\157\x6e", "\x43\165\163\164\157\155\145\162\x2d\113\x65\x79" => $Xs, "\124\151\x6d\145\163\x74\x61\155\x70" => $Fc, "\101\165\x74\150\x6f\x72\151\x7a\x61\164\x69\x6f\156" => $lE);
+        $kF = array("\x6d\145\x74\150\157\x64" => "\x50\x4f\123\x54", "\142\157\x64\x79" => $Gu, "\x74\x69\x6d\x65\157\165\x74" => "\65", "\162\x65\144\x69\162\x65\143\164\151\x6f\156" => "\x35", "\x68\164\164\160\166\x65\x72\163\x69\157\156" => "\x31\x2e\60", "\142\154\x6f\x63\153\x69\x6e\147" => true, "\150\x65\141\x64\145\162\163" => $ym);
+        $b0 = SAMLSPUtilities::mo_saml_wp_remote_call($pZ, $kF);
+        return $b0;
+    }
+    function mo_saml_vl($yJ, $GI)
+    {
+        $pZ = '';
+        if ($GI) {
+            goto ib;
+        }
+        $pZ = mo_options_plugin_constants::HOSTNAME . "\x2f\155\157\141\163\57\x61\x70\151\57\x62\x61\143\x6b\165\160\x63\157\x64\145\57\166\x65\x72\151\146\171";
+        goto sn;
+        ib:
+        $pZ = mo_options_plugin_constants::HOSTNAME . "\x2f\x6d\157\x61\x73\x2f\141\x70\151\57\142\x61\x63\153\165\160\x63\157\144\x65\x2f\x63\150\145\x63\153";
+        sn:
+        $Xs = get_option("\155\157\137\163\141\155\x6c\x5f\x61\x64\155\x69\156\x5f\x63\x75\163\164\x6f\155\145\162\137\153\145\171");
+        $oA = get_option("\155\x6f\137\163\141\x6d\x6c\137\141\144\155\x69\156\x5f\141\x70\151\x5f\x6b\145\171");
+        $Fc = round(microtime(true) * 1000);
+        $nF = $Xs . number_format($Fc, 0, '', '') . $oA;
+        $lE = hash("\x73\x68\141\65\x31\x32", $nF);
+        $Fc = number_format($Fc, 0, '', '');
+        $O9 = '';
+        $O9 = array("\143\x6f\x64\x65" => $yJ, "\x63\x75\x73\164\x6f\x6d\145\162\113\145\171" => $Xs, "\x61\144\144\151\x74\x69\157\x6e\141\154\x46\151\x65\x6c\x64\x73" => array("\x66\151\x65\x6c\144\x31" => home_url()));
+        $Gu = json_encode($O9);
+        $ym = array("\103\157\x6e\164\145\156\164\55\x54\x79\160\145" => "\141\x70\160\x6c\151\143\x61\164\x69\157\156\x2f\152\x73\x6f\x6e", "\x43\x75\x73\164\157\x6d\145\162\55\x4b\x65\x79" => $Xs, "\x54\x69\x6d\x65\163\164\141\155\160" => $Fc, "\x41\x75\x74\x68\157\162\x69\172\141\164\151\157\x6e" => $lE);
+        $kF = array("\155\x65\x74\150\157\144" => "\x50\x4f\x53\124", "\x62\x6f\144\x79" => $Gu, "\x74\x69\x6d\x65\157\x75\164" => "\65", "\162\x65\x64\x69\x72\145\x63\164\x69\157\x6e" => "\x35", "\x68\x74\164\x70\166\145\162\x73\151\x6f\156" => "\61\56\x30", "\142\x6c\157\x63\x6b\x69\156\147" => true, "\150\145\x61\x64\145\162\163" => $ym);
+        $b0 = SAMLSPUtilities::mo_saml_wp_remote_call($pZ, $kF);
+        return $b0;
+    }
+    function check_customer_ln()
+    {
+        $pZ = mo_options_plugin_constants::HOSTNAME . "\57\155\157\x61\163\x2f\162\145\163\x74\57\143\x75\163\164\157\155\145\x72\x2f\154\x69\x63\145\156\x73\145";
+        $Xs = get_option("\x6d\157\137\163\141\155\x6c\x5f\x61\144\155\151\156\x5f\x63\165\x73\x74\157\x6d\145\162\x5f\x6b\145\171");
+        $oA = get_option("\155\x6f\x5f\163\x61\155\x6c\x5f\x61\144\x6d\x69\x6e\x5f\x61\x70\151\137\153\x65\171");
+        $Fc = round(microtime(true) * 1000);
+        $nF = $Xs . number_format($Fc, 0, '', '') . $oA;
+        $lE = hash("\x73\x68\x61\65\61\62", $nF);
+        $Fc = number_format($Fc, 0, '', '');
+        $O9 = '';
+        $O9 = array("\143\x75\x73\164\x6f\x6d\145\x72\x49\x64" => $Xs, "\x61\x70\160\x6c\x69\x63\x61\164\x69\x6f\x6e\x4e\x61\x6d\145" => "\x77\x70\x5f\163\x61\x6d\x6c\137\x73\x73\157\137\x73\x74\x61\156\144\x61\162\x64\x5f\160\x6c\x61\156");
+        $Gu = json_encode($O9);
+        $ym = array("\103\157\156\x74\145\156\x74\55\x54\171\160\x65" => "\x61\x70\160\x6c\x69\x63\x61\164\151\x6f\156\x2f\152\x73\x6f\x6e", "\x43\165\163\x74\157\x6d\145\162\x2d\113\145\171" => $Xs, "\124\x69\x6d\x65\163\x74\x61\x6d\160" => $Fc, "\x41\165\164\x68\157\x72\x69\172\x61\164\151\x6f\156" => $lE);
+        $kF = array("\155\145\164\x68\157\x64" => "\x50\x4f\123\x54", "\x62\157\144\x79" => $Gu, "\x74\x69\155\x65\157\165\x74" => "\65", "\162\145\x64\x69\162\x65\143\x74\151\x6f\x6e" => "\65", "\150\164\x74\160\x76\x65\162\163\151\x6f\156" => "\61\x2e\60", "\x62\154\157\143\x6b\x69\156\x67" => true, "\x68\145\x61\x64\145\x72\163" => $ym);
+        $b0 = SAMLSPUtilities::mo_saml_wp_remote_call($pZ, $kF);
+        return $b0;
+    }
+    function mo_saml_update_status()
+    {
+        $pZ = mo_options_plugin_constants::HOSTNAME . "\57\155\157\x61\163\x2f\141\160\x69\x2f\142\141\143\153\165\160\x63\157\144\x65\57\x75\x70\144\141\164\145\163\164\141\164\165\x73";
+        $Xs = get_option("\155\x6f\x5f\163\141\x6d\154\x5f\x61\144\x6d\x69\156\137\x63\165\x73\x74\157\x6d\145\162\x5f\153\145\171");
+        $oA = get_option("\155\157\x5f\163\x61\x6d\x6c\137\141\x64\x6d\151\156\137\141\x70\151\x5f\x6b\145\171");
+        $Fc = round(microtime(true) * 1000);
+        $nF = $Xs . number_format($Fc, 0, '', '') . $oA;
+        $lE = hash("\163\150\141\x35\61\x32", $nF);
+        $Xr = get_option("\155\x6f\137\163\141\155\154\137\x63\165\x73\x74\157\155\145\162\x5f\164\157\153\145\156");
+        $yJ = AESEncryption::decrypt_data(get_option("\163\x6d\154\137\x6c\153"), $Xr);
+        $O9 = array("\x63\157\x64\x65" => $yJ, "\143\x75\163\164\x6f\x6d\145\162\113\145\171" => $Xs, "\141\144\144\x69\164\151\157\156\141\x6c\106\x69\x65\x6c\x64\x73" => array("\146\x69\x65\x6c\144\61" => home_url()));
+        $Gu = json_encode($O9);
+        $Fc = number_format($Fc, 0, '', '');
+        $ym = array("\x43\157\156\x74\x65\156\164\55\124\171\160\145" => "\x61\x70\x70\x6c\x69\x63\x61\x74\x69\157\156\57\x6a\163\x6f\156", "\103\165\x73\164\157\x6d\145\x72\x2d\x4b\145\171" => $Xs, "\124\x69\155\x65\163\164\141\x6d\x70" => $Fc, "\101\165\164\150\x6f\162\151\172\141\164\x69\157\156" => $lE);
+        $kF = array("\155\145\x74\150\x6f\144" => "\120\117\x53\124", "\x62\157\x64\x79" => $Gu, "\164\151\x6d\145\157\165\164" => "\65", "\x72\145\x64\x69\162\x65\143\x74\x69\157\x6e" => "\65", "\x68\x74\x74\x70\166\145\x72\163\x69\x6f\156" => "\61\56\x30", "\142\x6c\157\143\153\x69\156\x67" => true, "\150\x65\x61\x64\145\x72\x73" => $ym);
+        $b0 = SAMLSPUtilities::mo_saml_wp_remote_call($pZ, $kF);
+        return $b0;
+    }
 }
 ?>

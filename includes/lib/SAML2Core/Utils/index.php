@@ -1,5 +1,8 @@
 <?php
 
-if ( ! defined( 'WPINC' ) ) {
-    die();
+
+if (defined("\x57\x50\x49\x4e\103")) {
+    goto Hxs;
 }
+die;
+Hxs:

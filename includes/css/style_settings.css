@@ -47,7 +47,7 @@
 	text-decoration: underline;
 }
 .mo_saml_table_textbox {
-	width: 80%;
+	width:80%;
 }
 .mo_saml_settings_table {
 	width: 100%;
@@ -125,8 +125,8 @@
 	background-color:#FFFFFF;
 }
 
-.mo_saml_premium_thumbnail{
-	width: 350px;
+.mo_saml_local_thumbnail{
+	width: 250px;
     padding: 4px;
     margin-bottom: 10px;
     line-height: 1.42857143;
@@ -140,7 +140,7 @@
 
 .mo-fa-icon>tr>td>i.fa{
 	color:#5b8a0f;
-	
+
 }
 
 .mo_align-center>tr>td{
@@ -166,7 +166,7 @@
 .tooltip {
     position: relative;
     display: inline-block;
-    size: letter;
+	size: letter;
  /* If you want dots under the hoverable text */
 }
 
@@ -180,19 +180,18 @@
     text-align: center;
     padding: 5px 0;
     border-radius: 6px;
-    font-size: 12px;
+	font-size: 12px;
     /* Position the tooltip text */
     position: absolute;
     z-index: 1;
     bottom: 125%;
     left: 50%;
     margin-left: -60px;
-    font-size: small;
+	font-size: small;
     /* Fade in tooltip */
     opacity: 50;
     transition: opacity 0.3s;
 }
-
 /*SAML Request and Response pages*/
 .mo-display-logs{
 	color: #3c763d;
@@ -239,6 +238,7 @@
     visibility: visible;
     opacity: 1;
 }
+
 
 .mySlides {display: none}
 img {vertical-align: middle;}
@@ -307,7 +307,7 @@ img {vertical-align: middle;}
 }
 
 /* Fading animation */
-.mySlides.fade {
+.fade {
 	-webkit-animation-name: fade;
 	-webkit-animation-duration: 1.5s;
 	animation-name: fade;
@@ -357,11 +357,6 @@ background-color: #cdcdcd;
 transition: .4s;
 }
 
-input:disabled + .slider{
-    background-color: #ebebeb;
-    cursor: default;
-}
-
 .slider:before {
 position: absolute;
 content: "";
@@ -388,6 +383,11 @@ input:checked + .slider:before {
 transform: translateX(16px);
 }
 
+input:disabled + .slider{
+    background-color: #ebebeb;
+    cursor: default;
+}
+
 /* Rounded sliders */
 .slider.round {
 border-radius: 24px;
@@ -402,7 +402,7 @@ border-radius: 50%;
     100% { opacity: 1;
         -webkit-transform: translateX(10px);
         -moz-transform: translateX(10px);
-        -o-transform: translateX(10px);
+        -0-transform: translateX(10px);
         transform: translateX(10px);
     }
 
@@ -412,7 +412,7 @@ border-radius: 50%;
     100% { opacity: 1;
         -webkit-transform: translateX(-10px);
         -moz-transform: translateX(-10px);
-        -o-transform: translateX(-10px);
+        -0-transform: translateX(-10px);
         transform: translateX(-10px);
     }
 
@@ -456,6 +456,12 @@ border-radius: 50%;
 }
 
 
+
+.mo_card:hover td{
+	box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+	-webkit-box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+
 .mo_copy{
 	border: 1px solid #CCCCCC;
 	padding:8px;
@@ -466,6 +472,7 @@ border-radius: 50%;
 .mo_copy:active{
 	background-color:#CCCCCC;
 }
+
 
  /* Tooltip container */
  .copytooltip {
@@ -515,33 +522,6 @@ border-radius: 50%;
     visibility: visible;
     opacity: 1;
 }
-
-.close {
-    float: right;
-    font-size: 21px;
-    font-weight: bold;
-    line-height: 1;
-    color: #000;
-    text-shadow: 0 1px 0 #fff;
-    filter: alpha(opacity=20);
-    opacity: .2;
-}
-.close:hover,
-.close:focus {
-    color: #000;
-    text-decoration: none;
-    cursor: pointer;
-    filter: alpha(opacity=50);
-    opacity: .5;
-}
-button.close {
-    -webkit-appearance: none;
-    padding: 0;
-    cursor: pointer;
-    background: transparent;
-    border: 0;
-}
-
 .modal-open {
     overflow: hidden;
 }
@@ -665,11 +645,36 @@ button.close {
         width: 900px;
     }
 }
+.close {
+    float: right;
+    font-size: 21px;
+    font-weight: bold;
+    line-height: 1;
+    color: #000;
+    text-shadow: 0 1px 0 #fff;
+    filter: alpha(opacity=20);
+    opacity: .2;
+}
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+    filter: alpha(opacity=50);
+    opacity: .5;
+}
+button.close {
+    -webkit-appearance: none;
+    padding: 0;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+}
 /* Style the tab */
 .tab {
     overflow: hidden;
     border: 1px solid #ccc;
-    background-color: #bbb;
+    background-color: #f1f1f1;
 }
 
 /* Style the buttons inside the tab */
@@ -701,3 +706,4 @@ button.close {
     border: 1px solid #ccc;
     border-top: none;
 }
+

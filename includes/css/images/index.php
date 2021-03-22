@@ -1,5 +1,8 @@
 <?php
 
-if ( ! defined( 'WPINC' ) ) {
-	die();
+
+if (defined("\127\x50\111\116\103")) {
+    goto Ow;
 }
+die;
+Ow:
